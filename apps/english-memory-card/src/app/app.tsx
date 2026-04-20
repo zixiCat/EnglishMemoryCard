@@ -1,12 +1,10 @@
-import { Brain, CalendarDays, Sparkles } from 'lucide-react';
+import { Brain } from 'lucide-react';
 import { motion } from 'motion/react';
 
 import { MemoryCardFeed } from './components/memory-card-feed';
 import { importedNoteSections } from './data/generated-notes';
 import {
   buildReviewDeck,
-  formatNoteDate,
-  formatStageLabel,
   getReviewSummary,
 } from './lib/forgetting-curve';
 import { useReviewStore } from './store/use-review-store';
@@ -18,6 +16,8 @@ export function App() {
   const activeCardId = useReviewStore((state) => state.activeCardId);
   const hydrated = useReviewStore((state) => state.hydrated);
   const progressById = useReviewStore((state) => state.progressById);
+  const reviewedCardIds = useReviewStore((state) => state.sessionReviewedIds);
+  const markCardReviewed = useReviewStore((state) => state.markCardReviewed);
   const rememberCard = useReviewStore((state) => state.rememberCard);
   const retryCard = useReviewStore((state) => state.retryCard);
   const setActiveCard = useReviewStore((state) => state.setActiveCard);
@@ -28,17 +28,17 @@ export function App() {
 
   if (!hydrated) {
     return (
-      <main className="flex min-h-[100svh] items-center justify-center px-5 py-10">
+      <main className="mx-auto flex min-h-[100svh] w-full max-w-md items-center justify-center px-5 py-10">
         <motion.div
           animate={{ opacity: 1, y: 0 }}
-          className="memory-glass w-full max-w-sm rounded-[32px] border border-white/80 bg-white/70 p-10 text-center shadow-[0_24px_80px_rgba(20,33,61,0.14)]"
+          className="w-full rounded-[24px] border border-slate-200 bg-white p-8 text-center shadow-[0_12px_36px_rgba(15,23,42,0.08)]"
           initial={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
         >
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-500">
             Preparing review deck
           </p>
-          <h1 className="mt-5 text-4xl font-semibold text-slate-900">
+          <h1 className="mt-4 text-3xl font-semibold text-slate-900">
             Loading your next memory cards.
           </h1>
         </motion.div>
@@ -48,15 +48,15 @@ export function App() {
 
   if (cards.length === 0) {
     return (
-      <main className="flex min-h-[100svh] items-center justify-center px-5 py-10">
-        <div className="memory-glass w-full max-w-md rounded-[32px] border border-white/80 bg-white/75 p-10 shadow-[0_24px_80px_rgba(20,33,61,0.14)]">
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">
+      <main className="mx-auto flex min-h-[100svh] w-full max-w-md items-center justify-center px-5 py-10">
+        <div className="w-full rounded-[24px] border border-slate-200 bg-white p-8 shadow-[0_12px_36px_rgba(15,23,42,0.08)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-500">
             No cards yet
           </p>
-          <h1 className="mt-5 text-4xl font-semibold text-slate-900">
+          <h1 className="mt-4 text-3xl font-semibold text-slate-900">
             Import Markdown notes to build the feed.
           </h1>
-          <p className="mt-5 text-[15px] leading-7 text-slate-600">
+          <p className="mt-4 text-[15px] leading-7 text-slate-600">
             Run <span className="font-semibold text-slate-900">npm run import:cards -- &quot;C:\Users\huangzixi\OneDrive\EnglishMemoryCard&quot;</span>
             {' '}from the workspace root, then refresh the page.
           </p>
@@ -66,56 +66,36 @@ export function App() {
   }
 
   return (
-    <main className="relative min-h-[100svh] overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-10%] top-[8%] h-72 w-72 rounded-full bg-amber-200/40 blur-3xl" />
-        <div className="absolute bottom-[10%] right-[-12%] h-80 w-80 rounded-full bg-blue-300/25 blur-3xl" />
-      </div>
-
+    <main className="mx-auto min-h-[100svh] w-full max-w-md px-5 py-5 sm:py-6">
       <motion.header
         animate={{ opacity: 1, y: 0 }}
-        className="pointer-events-none fixed inset-x-0 top-0 z-30 px-5 pt-5"
-        initial={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.35, ease: 'easeOut' }}
+        className="mb-5"
+        initial={{ opacity: 0, y: -12 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
       >
-        <div className="memory-glass pointer-events-auto mx-auto flex max-w-md items-center justify-between gap-5 rounded-full border border-white/80 bg-white/72 px-5 py-3 shadow-[0_18px_50px_rgba(20,33,61,0.12)]">
+        <div className="flex items-center justify-between gap-4 px-1">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
               English Memory Card
             </p>
-            <p className="mt-1 text-sm text-slate-700">
-              {summary.dueNow} due now, {summary.upcoming} upcoming.
+            <p className="mt-1 text-sm text-slate-600">
+              {summary.dueNow} due now, {summary.upcoming} upcoming
             </p>
           </div>
-          <div className="flex items-center gap-3 rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-slate-900/15">
+          <div className="flex shrink-0 items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_8px_20px_rgba(15,23,42,0.06)]">
             <Brain className="h-4 w-4" />
             <span>{activeCard?.dueLabel ?? 'Ready'}</span>
           </div>
         </div>
       </motion.header>
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-5 z-20 px-5">
-        <div className="mx-auto flex max-w-md items-center justify-between gap-5 text-[13px] text-slate-600">
-          <div className="memory-glass rounded-full border border-white/70 bg-white/60 px-4 py-2">
-            <div className="flex items-center gap-3">
-              <CalendarDays className="h-4 w-4" />
-              <span>{activeCard ? formatNoteDate(activeCard.date) : 'No active card'}</span>
-            </div>
-          </div>
-          <div className="memory-glass rounded-full border border-white/70 bg-white/60 px-4 py-2">
-            <div className="flex items-center gap-3">
-              <Sparkles className="h-4 w-4" />
-              <span>{activeCard ? formatStageLabel(activeCard.stage) : 'Waiting for notes'}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <MemoryCardFeed
         activeCardId={activeCard?.id ?? null}
         cards={cards}
         onActiveCardChange={setActiveCard}
+        onCardReviewed={markCardReviewed}
         onRemember={rememberCard}
+        reviewedCardIds={reviewedCardIds}
         onRetry={retryCard}
       />
     </main>

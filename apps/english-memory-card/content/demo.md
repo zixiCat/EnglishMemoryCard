@@ -6,7 +6,7 @@
 Say:
 "I nearly missed my stop because I was reading."
 
-Try one new sentence aloud before swiping down.
+Try one new sentence aloud before recording this review.
 
 ## 2026-04-18 Work Vocabulary
 - follow up

@@ -6,19 +6,32 @@ Use this flow when the English Memory Card site needs to be published as a stati
 
 ### GitHub Actions Pages
 
-Build the Pages artifact:
+This is the preferred flow when you want deployment to happen automatically after pushing to GitHub.
+
+After you commit and push to `master`, the workflow at `.github/workflows/deploy-pages.yml` builds the site and deploys it for you.
+
+Typical flow:
+
+```sh
+npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
+git add .
+git commit -m "update study deck"
+git push origin master
+```
+
+You only need to build the Pages artifact locally if you want to inspect it before pushing:
 
 ```sh
 npm run build:pages
 ```
 
-This writes the deployable static files to `.github-pages-dist` and prepares:
+That writes the deployable static files to `.github-pages-dist` and prepares:
 
 - `index.html`
 - `404.html`
 - `.nojekyll`
 
-The workflow at `.github/workflows/deploy-pages.yml` deploys that folder on pushes to `master`.
+There is no separate local deploy step for this mode.
 
 Repository setting required:
 
@@ -45,9 +58,8 @@ Repository setting required:
 ## Recommended Order
 
 1. Import new Markdown content locally if needed.
-2. Run `npm run build:pages` for GitHub Actions deployment or `npm run export:docs` for docs-folder hosting.
-3. Commit the generated files.
-4. Push to `master`.
+2. For GitHub Actions deployment: commit and push to `master`. GitHub handles the build and deploy.
+3. For docs-folder hosting: run `npm run export:docs`, then commit and push the generated `docs/` files.
 
 ## Important Constraint
 

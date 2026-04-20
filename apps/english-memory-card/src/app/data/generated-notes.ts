@@ -6,9 +6,9 @@ export const importedNoteSections = [
     "relativePath": "demo.md",
     "date": "2026-04-17",
     "title": "Travel Phrases",
-    "body": "- board the train\n- miss the stop\n- keep an eye on your bag\n\nSay:\n\"I nearly missed my stop because I was reading.\"\n\nTry one new sentence aloud before swiping down.",
+    "body": "- board the train\n- miss the stop\n- keep an eye on your bag\n\nSay:\n\"I nearly missed my stop because I was reading.\"\n\nTry one new sentence aloud before recording this review.",
     "excerpt": "- board the train - miss the stop - keep an eye on your bag Say: \"I nearly missed my stop because I was reading.\" Try one new sentence aloud",
-    "wordCount": 33
+    "wordCount": 34
   },
   {
     "id": "demo-2026-04-18-2",

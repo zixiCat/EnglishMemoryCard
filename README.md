@@ -61,15 +61,28 @@ This repository now supports two static deployment flows.
 
 ### GitHub Actions Pages Deployment
 
-Build the Pages artifact locally with:
+This is the simplest deployment flow.
+
+After your changes are committed, pushing to `master` automatically triggers the workflow in `.github/workflows/deploy-pages.yml`, which builds the site and deploys it to GitHub Pages.
+
+Use this sequence when your notes or UI change:
+
+```sh
+npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
+git add .
+git commit -m "update study deck"
+git push origin master
+```
+
+GitHub Actions handles the build and deploy step after the push. You do not need to run a separate deploy command locally.
+
+If you want to verify the Pages artifact locally before pushing, you can still build it with:
 
 ```sh
 npm run build:pages
 ```
 
-This writes the static site to `.github-pages-dist` with relative asset paths, a `404.html` fallback, and `.nojekyll`.
-
-The workflow in `.github/workflows/deploy-pages.yml` deploys that artifact automatically on pushes to `master`.
+That command writes the static site to `.github-pages-dist` with relative asset paths, a `404.html` fallback, and `.nojekyll`.
 
 In your GitHub repository settings, set Pages to use **GitHub Actions** as the source.
 
@@ -83,26 +96,30 @@ npm run export:docs
 
 That command builds the site into a temporary folder, then publishes `index.html`, `404.html`, `.nojekyll`, and the hashed assets into `docs/`. If the repository still has a previous root-level export, the command removes those legacy generated files during the same run.
 
+Use this flow only if your repository is configured for branch-based Pages hosting from `docs/`.
+
 In your GitHub repository settings, set Pages to use **Deploy from a branch**, choose your publishing branch, and set the folder to **/docs**.
 
 ### Important Note About OneDrive Content
 
 GitHub Actions cannot read your local OneDrive folder. The deployment flow depends on the generated data file already being committed.
 
-Use this sequence when your notes change:
+Use this sequence when your notes change and you are deploying with GitHub Actions Pages:
 
 ```sh
 npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
+git add .
+git commit -m "update study deck"
+git push origin master
+```
+
+If you are using docs-folder hosting instead of GitHub Actions Pages, replace the commit-only flow above with:
+
+```sh
 npm run export:docs
 ```
 
-If you deploy with GitHub Actions instead of docs-folder hosting, you can replace the second command with:
-
-```sh
-npm run build:pages
-```
-
-Then commit and push the updated generated note data, workflow, and any exported static files under `docs/` that you want GitHub Pages to serve.
+Then commit and push the updated generated note data and exported static files under `docs/`.
 
 ## Review Flow
 
