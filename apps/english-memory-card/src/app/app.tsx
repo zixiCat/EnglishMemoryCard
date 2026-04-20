@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 
 import { MemoryCardFeed } from './components/memory-card-feed';
-import { noteSections } from './data/note-sections';
+import { noteSections } from './data/generated-notes';
 import { buildReviewDeck } from './lib/forgetting-curve';
 import { useReviewStore } from './store/use-review-store';
 
