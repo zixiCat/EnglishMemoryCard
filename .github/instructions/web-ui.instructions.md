@@ -35,16 +35,12 @@ applyTo: "apps/english-memory-card/**
 - **Theming:** Default to Light Mode. Apply `dark:` utility classes for Tailwind dark mode support (e.g., `dark:text-white`).
 - **Animations:** Use `motion/react` for all UI transitions; avoid raw CSS animations.
 
-## 3. Data Fetching & API
-
-- **API Client:** Use `@workshop/workshop-openapi` (aliased as `$api`), which is powered by `openapi-fetch` for type-safe requests generated from the OpenAPI schema. Use `npm run openapi`
-
-## 4. Coding Patterns
+## 3. Coding Patterns
 
 - **Components:** Functional components only, with explicit TypeScript interfaces for public props.
 - **Feature Structure:** Prefer small, focused components, hooks, and stores. When a file becomes difficult to follow, extract a sub-component, hook, or feature-local helper that clarifies responsibility and keeps state close to the feature.
 
-## 5. Browser Validation
+## 4. Browser Validation
 
 - After implementing frontend changes, use the browser tools to verify the primary user flow yourself before finishing whenever the relevant app can be run locally.
 - For changes that affect routing, forms, tables, authentication, uploads, or other interactive behavior, validate the real interaction in the browser instead of relying on code inspection alone.
