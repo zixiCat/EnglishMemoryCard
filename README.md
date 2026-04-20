@@ -4,10 +4,10 @@ EnglishMemoryCard turns dated Markdown study notes into a phone-first review dec
 
 ## Markdown Format
 
-Each review card starts with a level-2 heading whose text begins with a date. The rest of the heading becomes the card title.
+Each review card starts with a level-2 or deeper heading whose text begins with a date. The rest of the heading becomes the card title.
 
 ```md
-## 2026-04-20 Travel Phrases
+### 2026-04-20 Travel Phrases
 - board the train
 - miss the stop
 

@@ -25,7 +25,7 @@ export function buildReviewDeck(
   progressById: Record<string, StoredReviewState>,
   now = new Date()
 ): ReviewCard[] {
-  return [...sections]
+  return sections
     .map((section) => {
       const savedProgress = progressById[section.id];
       const dueAt = savedProgress?.dueAt ?? createInitialDueAt(section.date);

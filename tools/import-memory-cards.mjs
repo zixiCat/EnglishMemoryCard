@@ -38,7 +38,7 @@ async function main() {
 
   if (sections.length === 0) {
     throw new Error(
-      'Markdown files were found, but no `##` headings started with a supported date.'
+      'Markdown files were found, but no `##` or `###` headings started with a supported date.'
     );
   }
 
@@ -92,7 +92,7 @@ async function collectMarkdownFiles(directoryPath) {
 }
 
 function parseMarkdownSections(markdown, filePath, relativeFilePath) {
-  const headings = Array.from(markdown.matchAll(/^##\s+(.+)$/gm));
+  const headings = Array.from(markdown.matchAll(/^#{2,6}\s+(.+)$/gm));
   const sections = [];
 
   headings.forEach((headingMatch, index) => {

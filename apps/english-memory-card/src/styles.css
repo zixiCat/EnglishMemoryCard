@@ -66,6 +66,16 @@ select {
 	display: none;
 }
 
+.memory-feed {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	overscroll-behavior-y: contain;
+}
+
+.memory-feed::-webkit-scrollbar {
+	display: none;
+}
+
 .memory-glass {
 	backdrop-filter: blur(12px);
 }

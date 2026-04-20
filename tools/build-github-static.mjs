@@ -32,7 +32,9 @@ async function buildStaticSite() {
     : process.platform === 'win32'
       ? 'npm.cmd'
       : 'npm';
-  const args = npmExecPath ? [npmExecPath, 'run', 'build'] : ['run', 'build'];
+  const args = npmExecPath
+    ? [npmExecPath, 'run', 'build', '--', '--skip-nx-cache']
+    : ['run', 'build', '--', '--skip-nx-cache'];
 
   await new Promise((resolveBuild, rejectBuild) => {
     const child = spawn(command, args, {
