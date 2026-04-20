@@ -8,7 +8,7 @@ const baseHref = process.env.ENGLISH_CARD_BASE_HREF || '/';
 
 if (outputPath === workspaceRoot) {
   throw new Error(
-    'Refusing to write the webpack output directly into the repository root. Use tools/build-github-static.mjs --publish-root instead.'
+    'Refusing to write the webpack output directly into the repository root. Use tools/build-github-static.mjs --publish-docs instead.'
   );
 }
 

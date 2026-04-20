@@ -24,24 +24,28 @@ Repository setting required:
 
 - GitHub Pages source must be set to `GitHub Actions`.
 
-### Branch Root Static Hosting
+### Docs Folder Static Hosting
 
-If the hosting flow requires `index.html` at the repository root, run:
+If the hosting flow requires the built site to live in `docs/`, run:
 
 ```sh
-npm run export:root
+npm run export:docs
 ```
 
 This flow:
 
 1. Builds the static site with relative asset paths.
-2. Publishes `index.html` and the generated assets into the repository root.
-3. Updates `.github-pages-root-manifest.json` so stale bundles can be cleaned up safely.
+2. Publishes `index.html`, `404.html`, `.nojekyll`, and the generated assets into `docs/`.
+3. Removes the old root-level exported files if the repository still has a legacy root export.
+
+Repository setting required:
+
+- GitHub Pages source must be set to `Deploy from a branch`, with the publishing folder set to `/docs`.
 
 ## Recommended Order
 
 1. Import new Markdown content locally if needed.
-2. Run `npm run build:pages` for GitHub Actions deployment or `npm run export:root` for branch-root hosting.
+2. Run `npm run build:pages` for GitHub Actions deployment or `npm run export:docs` for docs-folder hosting.
 3. Commit the generated files.
 4. Push to `master`.
 

@@ -13,21 +13,29 @@ import { spawn } from 'node:child_process';
 const scriptPath = fileURLToPath(import.meta.url);
 const workspaceRoot = resolve(dirname(scriptPath), '..');
 const outputDir = resolve(workspaceRoot, '.github-pages-dist');
-const manifestPath = resolve(workspaceRoot, '.github-pages-root-manifest.json');
-const publishRoot = process.argv.includes('--publish-root');
+const docsDir = resolve(workspaceRoot, 'docs');
+const legacyRootManifestPath = resolve(workspaceRoot, '.github-pages-root-manifest.json');
+const publishDocs = process.argv.includes('--publish-docs');
 
 await buildStaticSite();
 await ensureGitHubPagesFiles(outputDir);
 
-if (publishRoot) {
-  await publishStaticSiteToRepositoryRoot(outputDir, workspaceRoot, manifestPath);
+if (publishDocs) {
+  await cleanupLegacyRootFiles(workspaceRoot, legacyRootManifestPath);
+  await publishStaticSiteToDirectory(outputDir, docsDir);
 }
 
 async function buildStaticSite() {
-  const command = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  const npmExecPath = process.env.npm_execpath;
+  const command = npmExecPath
+    ? process.execPath
+    : process.platform === 'win32'
+      ? 'npm.cmd'
+      : 'npm';
+  const args = npmExecPath ? [npmExecPath, 'run', 'build'] : ['run', 'build'];
 
   await new Promise((resolveBuild, rejectBuild) => {
-    const child = spawn(command, ['nx', 'build', 'english-memory-card'], {
+    const child = spawn(command, args, {
       cwd: workspaceRoot,
       env: {
         ...process.env,
@@ -60,35 +68,32 @@ async function ensureGitHubPagesFiles(directoryPath) {
   await writeFile(resolve(directoryPath, '.nojekyll'), '', 'utf8');
 }
 
-async function publishStaticSiteToRepositoryRoot(sourceDirectoryPath, repositoryRoot, rootManifestPath) {
-  const nextFiles = await collectRelativeFiles(sourceDirectoryPath);
-  const previousFiles = await readManifestFiles(rootManifestPath);
+async function publishStaticSiteToDirectory(sourceDirectoryPath, targetDirectoryPath) {
+  const relativeFiles = await collectRelativeFiles(sourceDirectoryPath);
 
-  for (const relativeFilePath of previousFiles) {
-    if (nextFiles.includes(relativeFilePath)) {
-      continue;
-    }
+  await rm(targetDirectoryPath, { recursive: true, force: true });
 
-    const absoluteFilePath = resolve(repositoryRoot, relativeFilePath);
-    await rm(absoluteFilePath, { force: true });
-    await removeEmptyParentDirectories(dirname(absoluteFilePath), repositoryRoot);
-  }
-
-  for (const relativeFilePath of nextFiles) {
+  for (const relativeFilePath of relativeFiles) {
     const sourceFilePath = resolve(sourceDirectoryPath, relativeFilePath);
-    const targetFilePath = resolve(repositoryRoot, relativeFilePath);
+    const targetFilePath = resolve(targetDirectoryPath, relativeFilePath);
 
     await mkdir(dirname(targetFilePath), { recursive: true });
     await copyFile(sourceFilePath, targetFilePath);
   }
 
-  await writeFile(
-    rootManifestPath,
-    `${JSON.stringify({ generatedAt: new Date().toISOString(), files: nextFiles }, null, 2)}\n`,
-    'utf8'
-  );
+  console.log(`Published ${relativeFiles.length} static files to ${targetDirectoryPath}.`);
+}
 
-  console.log(`Published ${nextFiles.length} static files to ${repositoryRoot}.`);
+async function cleanupLegacyRootFiles(repositoryRoot, rootManifestPath) {
+  const previousFiles = await readManifestFiles(rootManifestPath);
+
+  for (const relativeFilePath of previousFiles) {
+    const absoluteFilePath = resolve(repositoryRoot, relativeFilePath);
+    await rm(absoluteFilePath, { force: true });
+    await removeEmptyParentDirectories(dirname(absoluteFilePath), repositoryRoot);
+  }
+
+  await rm(rootManifestPath, { force: true });
 }
 
 async function collectRelativeFiles(directoryPath, sourceRoot = directoryPath) {

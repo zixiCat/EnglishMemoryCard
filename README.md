@@ -73,15 +73,17 @@ The workflow in `.github/workflows/deploy-pages.yml` deploys that artifact autom
 
 In your GitHub repository settings, set Pages to use **GitHub Actions** as the source.
 
-### Branch Root Static Deployment
+### Docs Folder Static Deployment
 
-If you want `index.html` and the compiled assets at the repository root for branch-based static hosting, run:
+If you want the compiled site committed under `docs/` for branch-based static hosting, run:
 
 ```sh
-npm run export:root
+npm run export:docs
 ```
 
-That command builds the site into a temporary folder, then publishes `index.html` and the hashed assets into the repository root without wiping your source files. It also updates `.github-pages-root-manifest.json` so old generated bundles can be cleaned up safely on the next export.
+That command builds the site into a temporary folder, then publishes `index.html`, `404.html`, `.nojekyll`, and the hashed assets into `docs/`. If the repository still has a previous root-level export, the command removes those legacy generated files during the same run.
+
+In your GitHub repository settings, set Pages to use **Deploy from a branch**, choose your publishing branch, and set the folder to **/docs**.
 
 ### Important Note About OneDrive Content
 
@@ -91,16 +93,16 @@ Use this sequence when your notes change:
 
 ```sh
 npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
-npm run export:root
+npm run export:docs
 ```
 
-If you deploy with GitHub Actions instead of branch-root hosting, you can replace the second command with:
+If you deploy with GitHub Actions instead of docs-folder hosting, you can replace the second command with:
 
 ```sh
 npm run build:pages
 ```
 
-Then commit and push the updated generated note data, workflow, and any exported static files you want GitHub Pages to serve.
+Then commit and push the updated generated note data, workflow, and any exported static files under `docs/` that you want GitHub Pages to serve.
 
 ## Review Flow
 
