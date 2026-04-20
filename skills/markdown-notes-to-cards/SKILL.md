@@ -1,11 +1,12 @@
 # Markdown Notes To Cards
 
-Use this flow when Markdown study notes in OneDrive need to become review cards for the English Memory Card site.
+Use this flow when Markdown study notes in the repository need to become review cards for the English Memory Card site.
 
-## Inputs
+## Source Of Truth
 
-- A folder of `.md` or `.markdown` files.
-- Each card section starts with a `##` heading whose text begins with a date.
+- Store note files in `apps/english-memory-card/src/app/data`.
+- The app reads `.md` files from that folder directly during development and production builds.
+- Each card section starts with a `##` or deeper heading whose text begins with a date.
 
 Supported heading formats:
 
@@ -14,28 +15,32 @@ Supported heading formats:
 - `## 2026.04.20 Topic`
 - `## 2026年4月20日 Topic`
 
-## Command
+## Workflow
 
-Windows path:
+Edit the Markdown file directly, for example:
 
 ```sh
-npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
+apps/english-memory-card/src/app/data/2026.md
 ```
 
-WSL path:
+Then run the app or a build:
 
 ```sh
-npm run import:cards -- "/mnt/c/Users/huangzixi/OneDrive/EnglishMemoryCard"
+npm start
+```
+
+```sh
+npm run build
 ```
 
 ## Output
 
-- Regenerates `apps/english-memory-card/src/app/data/generated-notes.ts`.
-- The website reads that generated file at build time.
+- The website parses the Markdown files directly.
+- No generated note module is required.
 
 ## Validation
 
-1. Run the import command.
-2. Confirm the generated note file changed.
-3. Start the app with `npm start` and verify the new cards appear.
-4. Commit the regenerated note data before deploying to GitHub Pages, because GitHub Actions cannot read the local OneDrive folder.
+1. Edit a Markdown file in `apps/english-memory-card/src/app/data`.
+2. Start the app with `npm start` and verify the new cards appear.
+3. Run `npm run build` before deploying if you want a production check.
+4. Commit the Markdown source changes before deploying to GitHub Pages.

@@ -1,6 +1,6 @@
 # EnglishMemoryCard
 
-EnglishMemoryCard turns dated Markdown study notes into a phone-first review deck. The app parses sections whose `##` headings start with a date, then presents them as full-screen cards ordered by a simple forgetting-curve schedule.
+EnglishMemoryCard turns dated Markdown study notes into a phone-first review deck. The app reads the Markdown files in `apps/english-memory-card/src/app/data`, parses sections whose `##` headings start with a date, and presents them as full-screen cards ordered by a simple forgetting-curve schedule.
 
 ## Markdown Format
 
@@ -17,7 +17,7 @@ Say:
 
 Supported date prefixes include `YYYY-MM-DD`, `YYYY/MM/DD`, `YYYY.MM.DD`, and `YYYY年M月D日`.
 
-## Import Notes
+## Edit Notes
 
 Install dependencies first:
 
@@ -25,21 +25,15 @@ Install dependencies first:
 npm install
 ```
 
-Import the Markdown files from your notes folder:
+Edit or add Markdown files directly in `apps/english-memory-card/src/app/data`.
 
 ```sh
-npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
+apps/english-memory-card/src/app/data/2026.md
 ```
 
-If you are running inside WSL or another Linux environment, use the mounted path instead:
+Each dated `##` or `###` heading becomes one review card. You can keep one year per file or split notes across multiple `.md` files in that folder.
 
-```sh
-npm run import:cards -- "/mnt/c/Users/huangzixi/OneDrive/EnglishMemoryCard"
-```
-
-If you do not pass a path, the importer reads the sample content in `apps/english-memory-card/content`.
-
-The importer writes a generated data module to `apps/english-memory-card/src/app/data/generated-notes.ts`.
+There is no generated note module to maintain anymore. GitHub Pages builds read the repo-local Markdown files directly.
 
 ## Run The App
 
@@ -68,7 +62,6 @@ After your changes are committed, pushing to `master` automatically triggers the
 Use this sequence when your notes or UI change:
 
 ```sh
-npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
 git add .
 git commit -m "update study deck"
 git push origin master
@@ -100,26 +93,13 @@ Use this flow only if your repository is configured for branch-based Pages hosti
 
 In your GitHub repository settings, set Pages to use **Deploy from a branch**, choose your publishing branch, and set the folder to **/docs**.
 
-### Important Note About OneDrive Content
-
-GitHub Actions cannot read your local OneDrive folder. The deployment flow depends on the generated data file already being committed.
-
-Use this sequence when your notes change and you are deploying with GitHub Actions Pages:
-
-```sh
-npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
-git add .
-git commit -m "update study deck"
-git push origin master
-```
-
-If you are using docs-folder hosting instead of GitHub Actions Pages, replace the commit-only flow above with:
+If you are using docs-folder hosting instead of GitHub Actions Pages, run:
 
 ```sh
 npm run export:docs
 ```
 
-Then commit and push the updated generated note data and exported static files under `docs/`.
+Then commit and push the updated Markdown source and exported static files under `docs/`.
 
 ## Review Flow
 

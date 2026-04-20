@@ -13,6 +13,14 @@ if (outputPath === workspaceRoot) {
 }
 
 module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.md$/i,
+        type: 'asset/source',
+      },
+    ],
+  },
   output: {
     path: outputPath,
     clean: true,

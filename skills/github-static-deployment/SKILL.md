@@ -13,7 +13,6 @@ After you commit and push to `master`, the workflow at `.github/workflows/deploy
 Typical flow:
 
 ```sh
-npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
 git add .
 git commit -m "update study deck"
 git push origin master
@@ -57,10 +56,10 @@ Repository setting required:
 
 ## Recommended Order
 
-1. Import new Markdown content locally if needed.
+1. Edit the Markdown files under `apps/english-memory-card/src/app/data`.
 2. For GitHub Actions deployment: commit and push to `master`. GitHub handles the build and deploy.
 3. For docs-folder hosting: run `npm run export:docs`, then commit and push the generated `docs/` files.
 
 ## Important Constraint
 
-GitHub Pages builds in GitHub cannot access local OneDrive content. Always commit the generated note data after running `npm run import:cards` locally.
+GitHub Pages builds use the Markdown files committed in this repository. Commit the updated `apps/english-memory-card/src/app/data/*.md` files before deploying.

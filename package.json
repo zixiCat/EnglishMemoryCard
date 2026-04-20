@@ -5,7 +5,6 @@
   "scripts"        : {
     "build:pages" : "node ./tools/build-github-static.mjs",
     "export:docs" : "node ./tools/build-github-static.mjs --publish-docs",
-    "import:cards": "node ./tools/import-memory-cards.mjs",
     "start"       : "nx serve english-memory-card",
     "build"       : "nx build english-memory-card",
     "test"        : "nx test english-memory-card",

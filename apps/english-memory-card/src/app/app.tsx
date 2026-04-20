@@ -1,12 +1,9 @@
 import { motion } from 'motion/react';
 
 import { MemoryCardFeed } from './components/memory-card-feed';
-import { importedNoteSections } from './data/generated-notes';
+import { noteSections } from './data/note-sections';
 import { buildReviewDeck } from './lib/forgetting-curve';
 import { useReviewStore } from './store/use-review-store';
-import type { NoteSection } from './types';
-
-const noteSections: readonly NoteSection[] = importedNoteSections;
 
 export function App() {
   const hydrated = useReviewStore((state) => state.hydrated);
@@ -41,8 +38,7 @@ export function App() {
             No notes found yet.
           </h1>
           <p className="mt-4 text-[15px] leading-7 text-slate-600">
-            Run <span className="font-semibold text-slate-900">npm run import:cards -- &quot;C:\Users\huangzixi\OneDrive\EnglishMemoryCard&quot;</span>
-            {' '}from the workspace root, then refresh the page.
+            Add a dated <span className="font-semibold text-slate-900">##</span> or <span className="font-semibold text-slate-900">###</span> heading in <span className="font-semibold text-slate-900">apps/english-memory-card/src/app/data/*.md</span>, then refresh the page.
           </p>
         </div>
       </main>
