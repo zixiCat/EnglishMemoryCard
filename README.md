@@ -55,6 +55,53 @@ Build the production bundle:
 npm run build
 ```
 
+## Deploy To GitHub Pages
+
+This repository now supports two static deployment flows.
+
+### GitHub Actions Pages Deployment
+
+Build the Pages artifact locally with:
+
+```sh
+npm run build:pages
+```
+
+This writes the static site to `.github-pages-dist` with relative asset paths, a `404.html` fallback, and `.nojekyll`.
+
+The workflow in `.github/workflows/deploy-pages.yml` deploys that artifact automatically on pushes to `master`.
+
+In your GitHub repository settings, set Pages to use **GitHub Actions** as the source.
+
+### Branch Root Static Deployment
+
+If you want `index.html` and the compiled assets at the repository root for branch-based static hosting, run:
+
+```sh
+npm run export:root
+```
+
+That command builds the site into a temporary folder, then publishes `index.html` and the hashed assets into the repository root without wiping your source files. It also updates `.github-pages-root-manifest.json` so old generated bundles can be cleaned up safely on the next export.
+
+### Important Note About OneDrive Content
+
+GitHub Actions cannot read your local OneDrive folder. The deployment flow depends on the generated data file already being committed.
+
+Use this sequence when your notes change:
+
+```sh
+npm run import:cards -- "C:\Users\huangzixi\OneDrive\EnglishMemoryCard"
+npm run export:root
+```
+
+If you deploy with GitHub Actions instead of branch-root hosting, you can replace the second command with:
+
+```sh
+npm run build:pages
+```
+
+Then commit and push the updated generated note data, workflow, and any exported static files you want GitHub Pages to serve.
+
 ## Review Flow
 
 - Cards are sorted by their next due date.

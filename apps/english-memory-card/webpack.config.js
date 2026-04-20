@@ -1,10 +1,20 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
-const { join } = require('path');
+const { isAbsolute, join, resolve } = require('path');
+
+const workspaceRoot = resolve(__dirname, '../..');
+const outputPath = resolveOutputPath();
+const baseHref = process.env.ENGLISH_CARD_BASE_HREF || '/';
+
+if (outputPath === workspaceRoot) {
+  throw new Error(
+    'Refusing to write the webpack output directly into the repository root. Use tools/build-github-static.mjs --publish-root instead.'
+  );
+}
 
 module.exports = {
   output: {
-    path: join(__dirname, 'dist'),
+    path: outputPath,
     clean: true,
   },
   devServer: {
@@ -21,7 +31,7 @@ module.exports = {
       compiler: 'babel',
       main: './src/main.tsx',
       index: './src/index.html',
-      baseHref: '/',
+      baseHref,
       assets: ["./src/favicon.ico","./src/assets"],
       styles: ["./src/styles.css"],
       outputHashing: process.env['NODE_ENV'] === 'production' ? 'all' : 'none',
@@ -34,3 +44,15 @@ module.exports = {
     }),
   ],
 };
+
+function resolveOutputPath() {
+  const requestedOutputPath = process.env.ENGLISH_CARD_OUTPUT_PATH;
+
+  if (!requestedOutputPath) {
+    return join(__dirname, 'dist');
+  }
+
+  return isAbsolute(requestedOutputPath)
+    ? requestedOutputPath
+    : resolve(workspaceRoot, requestedOutputPath);
+}

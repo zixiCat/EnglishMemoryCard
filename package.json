@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "build:pages": "node ./tools/build-github-static.mjs",
+    "export:root": "node ./tools/build-github-static.mjs --publish-root",
     "import:cards": "node ./tools/import-memory-cards.mjs",
     "start": "nx serve english-memory-card",
     "build": "nx build english-memory-card",
