@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "import:cards": "node ./tools/import-memory-cards.mjs",
     "start": "nx serve english-memory-card",
     "build": "nx build english-memory-card",
     "test": "nx test english-memory-card",
@@ -10,9 +11,12 @@
   },
   "private": true,
   "dependencies": {
+    "lucide-react": "^0.511.0",
+    "motion": "^12.23.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "6.30.3"
+    "react-router-dom": "6.30.3",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.14.5",
