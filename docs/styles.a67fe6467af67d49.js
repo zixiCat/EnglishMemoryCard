@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk_english_memory_card_english_memory_card=self.webpackChunk_english_memory_card_english_memory_card||[]).push([[869],{713(){}},e=>{var _;_=713,e(e.s=_)}]);
