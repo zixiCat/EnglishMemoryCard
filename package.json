@@ -3,12 +3,12 @@
   "version"        : "0.0.0",
   "license"        : "MIT",
   "scripts"        : {
-    "build:pages" : "node ./tools/build-github-static.mjs",
-    "export:docs" : "node ./tools/build-github-static.mjs --publish-docs",
-    "start"       : "nx serve english-memory-card",
-    "build"       : "nx build english-memory-card",
-    "test"        : "nx test english-memory-card",
-    "lint"        : "nx lint english-memory-card"
+    "build:pages": "node ./tools/build-github-static.mjs",
+    "deploy:docs": "node ./tools/build-github-static.mjs --publish-docs; node ./tools/deploy-docs.mjs",
+    "start"      : "nx serve english-memory-card",
+    "build"      : "nx build english-memory-card",
+    "test"       : "nx test english-memory-card",
+    "lint"       : "nx lint english-memory-card"
   },
   "private"        : true,
   "dependencies"   : {
