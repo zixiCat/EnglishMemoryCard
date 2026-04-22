@@ -18,11 +18,11 @@ export function App() {
       <main className="mx-auto flex min-h-[100svh] w-full max-w-md items-center justify-center px-4 py-6">
         <motion.div
           animate={{ opacity: 1, y: 0 }}
-          className="w-full rounded-[24px] border border-slate-200 bg-white p-6 text-center shadow-[0_12px_36px_rgba(15,23,42,0.08)]"
+          className="w-full rounded-[24px] border border-slate-200 bg-white p-6 text-center dark:border-slate-700 dark:bg-slate-800"
           initial={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
         >
-          <h1 className="text-2xl font-semibold text-slate-900">
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
             Loading your notes.
           </h1>
         </motion.div>
@@ -33,12 +33,12 @@ export function App() {
   if (cards.length === 0) {
     return (
       <main className="mx-auto flex min-h-[100svh] w-full max-w-md items-center justify-center px-4 py-6">
-        <div className="w-full rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_12px_36px_rgba(15,23,42,0.08)]">
-          <h1 className="text-2xl font-semibold text-slate-900">
+        <div className="w-full rounded-[24px] border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
             No notes found yet.
           </h1>
-          <p className="mt-4 text-[15px] leading-7 text-slate-600">
-            Add a dated <span className="font-semibold text-slate-900">##</span> or <span className="font-semibold text-slate-900">###</span> heading in <span className="font-semibold text-slate-900">apps/english-memory-card/src/app/data/*.md</span>, then refresh the page.
+          <p className="mt-4 text-[15px] leading-7 text-slate-600 dark:text-slate-400">
+            Add a dated <span className="font-semibold text-slate-900 dark:text-slate-100">##</span> or <span className="font-semibold text-slate-900 dark:text-slate-100">###</span> heading in <span className="font-semibold text-slate-900 dark:text-slate-100">apps/english-memory-card/src/app/data/*.md</span>, then refresh the page.
           </p>
         </div>
       </main>

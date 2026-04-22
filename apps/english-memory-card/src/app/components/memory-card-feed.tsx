@@ -25,12 +25,12 @@ export function MemoryCardFeed({
         {cards.map((card) => (
           <motion.article
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="flex min-h-[calc(100svh-1.5rem)] snap-start flex-col rounded-[28px] border border-slate-200/80 bg-[rgba(255,255,255,0.88)] p-4 shadow-[0_14px_40px_rgba(15,23,42,0.10)] backdrop-blur"
+            className="flex min-h-[calc(100svh-1.5rem)] snap-start flex-col rounded-[28px] border border-slate-200/80 bg-[rgba(255,255,255,0.88)] p-4 backdrop-blur dark:border-slate-700/80 dark:bg-[rgba(15,23,42,0.88)]"
             initial={{ opacity: 0, scale: 0.985, y: 20 }}
             key={card.id}
             transition={{ duration: 0.25, ease: 'easeOut' }}
           >
-            <div className="min-h-0 flex-1 overflow-hidden rounded-[22px] bg-slate-50/80 p-3">
+            <div className="min-h-0 flex-1 overflow-hidden rounded-[22px] bg-slate-50/80 p-3 dark:bg-slate-800/60">
               <div className="memory-scroll h-full overflow-y-auto pr-1">
                 <MemoryCardContent body={card.body} />
               </div>
@@ -38,7 +38,7 @@ export function MemoryCardFeed({
 
             <div className="mt-4 grid grid-cols-2 gap-3">
               <button
-                className="flex min-h-12 items-center justify-center gap-2 rounded-[18px] border border-slate-300 bg-white px-4 py-3 text-[15px] font-semibold text-slate-700 transition hover:border-slate-400"
+                className="flex min-h-12 items-center justify-center gap-2 rounded-[18px] border border-slate-300 bg-white px-4 py-3 text-[15px] font-semibold text-slate-700 transition hover:border-slate-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-500"
                 onClick={() => onRetry(card.id)}
                 type="button"
               >
@@ -46,7 +46,7 @@ export function MemoryCardFeed({
                 <span>Again</span>
               </button>
               <button
-                className="flex min-h-12 items-center justify-center gap-2 rounded-[18px] bg-slate-900 px-4 py-3 text-[15px] font-semibold text-white transition hover:bg-slate-800"
+                className="flex min-h-12 items-center justify-center gap-2 rounded-[18px] bg-slate-900 px-4 py-3 text-[15px] font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                 onClick={() => onRemember(card.id)}
                 type="button"
               >

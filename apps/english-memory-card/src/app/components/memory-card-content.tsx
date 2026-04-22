@@ -9,10 +9,10 @@ export function MemoryCardContent({ body }: MemoryCardContentProps) {
     .filter(Boolean);
 
   return (
-    <div className="space-y-3 text-[17px] leading-7 text-slate-800">
+    <div className="space-y-3 text-[17px] leading-7 text-slate-800 dark:text-slate-200">
       {lines.map((line, index) => (
         <p
-          className="rounded-[18px] bg-white px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.06)]"
+          className="rounded-[18px] bg-white px-4 py-3 dark:bg-slate-700/80"
           key={`${index}-${line}`}
         >
           {line}
