@@ -9,14 +9,7 @@ const exportScriptPath = resolve(
   "tools",
   "build-github-static.mjs",
 );
-
-const rawSubject = process.argv.slice(2).join(" ").trim();
-const normalizedSubject = normalizeCommitSubject(rawSubject);
-
-if (!normalizedSubject) {
-  console.error('Usage: npm run deploy:docs -- "your message"');
-  process.exit(1);
-}
+const commitMessage = "docs: update static pages";
 
 await runCommand(process.execPath, [exportScriptPath, "--publish-docs"]);
 
@@ -32,12 +25,8 @@ if (!statusResult.stdout.trim()) {
 }
 
 await runCommand("git", ["add", "-A"]);
-await runCommand("git", ["commit", "-m", `docs: ${normalizedSubject}`]);
+await runCommand("git", ["commit", "-m", commitMessage]);
 await runCommand("git", ["push", "gh", "HEAD"]);
-
-function normalizeCommitSubject(subject) {
-  return subject.replace(/^docs:\s*/i, "").trim();
-}
 
 function runCommand(command, args, options = {}) {
   const { captureOutput = false } = options;

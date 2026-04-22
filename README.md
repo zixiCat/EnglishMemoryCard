@@ -104,14 +104,14 @@ Then commit and push the updated Markdown source and exported static files under
 If you want one command that exports, commits, and pushes to the `gh` remote, run:
 
 ```sh
-npm run deploy:docs -- "refresh study deck"
+npm run deploy:docs
 ```
 
 That command:
 
 - runs `npm run export:docs`
 - stages the current repository changes
-- creates a commit with the message format `docs: refresh study deck`
+- always creates the commit `docs: update static pages`
 - pushes the current branch to `gh` with `git push gh HEAD`
 
 ## Review Flow
