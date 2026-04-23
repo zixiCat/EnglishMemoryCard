@@ -33,9 +33,9 @@ export function MemoryCardFeed({
       <div className="space-y-3">
         {cards.map((card) => (
           <motion.article
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            animate={{ opacity: 1 }}
             className="flex min-h-[calc(100svh-1.5rem)] snap-start flex-col rounded-[28px] border border-slate-200/80 bg-[rgba(255,255,255,0.88)] p-4 backdrop-blur dark:border-slate-700/80 dark:bg-[rgba(15,23,42,0.88)]"
-            initial={{ opacity: 0, scale: 0.985, y: 20 }}
+            initial={{ opacity: 0 }}
             key={card.id}
             transition={{ duration: 0.25, ease: 'easeOut' }}
           >
