@@ -3,8 +3,8 @@
   "version"        : "0.0.0",
   "license"        : "MIT",
   "scripts"        : {
-    "build:pages": "node ./tools/build-github-static.mjs",
-    "deploy"     : "node ./tools/build-github-static.mjs --publish-docs; node ./tools/deploy-docs.mjs",
+    "build:pages": "node ./scripts/build-github-static.mjs",
+    "deploy"     : "node ./scripts/build-github-static.mjs --publish-docs; node ./scripts/deploy-docs.mjs",
     "start"      : "nx serve english-memory-card",
     "build"      : "nx build english-memory-card",
     "test"       : "nx test english-memory-card",
