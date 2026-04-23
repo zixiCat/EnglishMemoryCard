@@ -145,7 +145,8 @@ export function RememberedCardDrawer({
               </div>
 
               <button
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600"
+                aria-label="Close remembered cards"
+                className="flex min-h-11 items-center justify-center rounded-[18px] border border-slate-200 bg-white px-4 text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600"
                 onClick={onClose}
                 type="button"
               >
