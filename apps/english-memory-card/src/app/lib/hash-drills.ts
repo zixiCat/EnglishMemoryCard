@@ -1,3 +1,5 @@
+import type { NoteSection } from '../types';
+
 export interface HashDrill {
   readonly intent: string | null;
   readonly key: string;
@@ -26,6 +28,8 @@ const FIELD_ALIASES = {
   triggers: ['trigger', 'triggers', 'context', 'scene', 'when', '触发', '场景'],
   value: ['value', 'values', 'sentence', 'chunk', 'v', '值', '句子', '组块'],
 } as const;
+
+const STRUCTURED_FIELD_ORDER = ['Key', 'Intent', 'Trigger', 'Reinforce', 'Note', 'Value'] as const;
 
 export function buildHashDrills(body: string): HashDrill[] {
   const parsedLines = body
@@ -68,6 +72,23 @@ export function buildHashDrills(body: string): HashDrill[] {
   }, []);
 }
 
+export function buildHashReviewSections(sections: readonly NoteSection[]): NoteSection[] {
+  return sections.flatMap((section) => {
+    const allDrills = buildHashDrills(section.body);
+    const structuredDrills = allDrills.filter((drill) => drill.source === 'structured');
+    const drills = structuredDrills.length > 0 ? structuredDrills : allDrills;
+
+    return drills.map((drill, index) => ({
+      ...section,
+      id: buildReviewSectionId(section.id, drill.key, index),
+      title: buildReviewTitle(drill),
+      body: stringifyHashDrill(drill),
+      excerpt: buildReviewExcerpt(drill),
+      wordCount: countReviewWords(drill),
+    }));
+  });
+}
+
 function parseHashLine(line: string): ParsedHashLine | null {
   const normalizedLine = normalizeSentence(line);
 
@@ -82,6 +103,61 @@ function parseHashLine(line: string): ParsedHashLine | null {
   }
 
   return parseStarterHashLine(normalizedLine);
+}
+
+function buildReviewSectionId(sectionId: string, key: string, index: number): string {
+  const normalizedKey = normalizeKeyIdentity(key).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+  return `${sectionId}-${normalizedKey || 'drill'}-${index + 1}`;
+}
+
+function buildReviewTitle(drill: HashDrill): string {
+  if (drill.intent) {
+    return capitalizeTitle(drill.intent);
+  }
+
+  return drill.key.replace(/^\[|\]$/g, '');
+}
+
+function buildReviewExcerpt(drill: HashDrill): string {
+  const firstValue = drill.values[0] ?? drill.key;
+
+  return normalizeInlineWhitespace(firstValue).slice(0, 140);
+}
+
+function countReviewWords(drill: HashDrill): number {
+  return drill.values
+    .join(' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .length;
+}
+
+function stringifyHashDrill(drill: HashDrill): string {
+  return drill.values.map((value, index) => {
+    const fields = index === 0
+      ? {
+          Key: drill.key,
+          Intent: drill.intent,
+          Trigger: formatFieldList(drill.triggers),
+          Reinforce: formatFieldList(drill.reinforce),
+          Note: drill.note,
+          Value: value,
+        }
+      : {
+          Key: drill.key,
+          Value: value,
+        };
+
+    return `- ${STRUCTURED_FIELD_ORDER
+      .map((fieldName) => {
+        const fieldValue = fields[fieldName as keyof typeof fields];
+
+        return fieldValue ? `${fieldName}: ${fieldValue}` : null;
+      })
+      .filter((field): field is string => Boolean(field))
+      .join(' | ')}`;
+  }).join('\n');
 }
 
 function parseStructuredHashLine(line: string): ParsedHashLine | null {
@@ -179,6 +255,14 @@ function buildStarterKey(value: string): string {
   const starter = words.slice(0, 3).join(' ') || value.slice(0, 12);
 
   return `[${starter}${words.length > 3 ? '…' : ''}]`;
+}
+
+function capitalizeTitle(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatFieldList(values: readonly string[]): string | null {
+  return values.length > 0 ? values.join(', ') : null;
 }
 
 function normalizeHashKey(value: string): string {

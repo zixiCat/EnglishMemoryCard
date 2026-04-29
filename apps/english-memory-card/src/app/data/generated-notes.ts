@@ -47,18 +47,25 @@ function readMarkdownModule(moduleValue: unknown): string {
 
 function parseMarkdownSections(markdown: string, relativePath: string): NoteSection[] {
   const headings = Array.from(markdown.matchAll(/^#{2,6}\s+(.+)$/gm));
-  const sections: NoteSection[] = [];
+  const datedHeadings = headings.reduce<Array<{
+    headingMatch: RegExpMatchArray;
+    parsedHeading: ParsedHeading;
+    headingIndex: number;
+  }>>((matches, headingMatch) => {
+    const parsedHeading = parseDateHeading(headingMatch[1]?.trim() ?? '');
+    const headingIndex = headingMatch.index;
 
-  headings.forEach((headingMatch, index) => {
-    const headingText = headingMatch[1]?.trim() ?? '';
-    const parsedHeading = parseDateHeading(headingText);
-
-    if (!parsedHeading || headingMatch.index === undefined) {
-      return;
+    if (!parsedHeading || headingIndex === undefined) {
+      return matches;
     }
 
-    const bodyStart = headingMatch.index + headingMatch[0].length;
-    const nextHeadingIndex = headings[index + 1]?.index;
+    return [...matches, { headingMatch, parsedHeading, headingIndex }];
+  }, []);
+  const sections: NoteSection[] = [];
+
+  datedHeadings.forEach(({ headingMatch, parsedHeading, headingIndex }, index) => {
+    const bodyStart = headingIndex + headingMatch[0].length;
+    const nextHeadingIndex = datedHeadings[index + 1]?.headingIndex;
     const bodyEnd = nextHeadingIndex === undefined ? markdown.length : nextHeadingIndex;
     const body = markdown.slice(bodyStart, bodyEnd).trim();
 

@@ -5,8 +5,11 @@ import type { ReactNode } from 'react';
 import { MemoryCardFeed, RememberedCardDrawer } from './components/memory-card-feed';
 import { noteSections } from './data/generated-notes';
 import { buildReviewDeck } from './lib/forgetting-curve';
+import { buildHashReviewSections } from './lib/hash-drills';
 import { useReviewStore } from './store/use-review-store';
 import type { ReviewCard } from './types';
+
+const hashReviewSections = buildHashReviewSections(noteSections);
 
 export function App() {
   const hydrated = useReviewStore((state) => state.hydrated);
@@ -16,7 +19,7 @@ export function App() {
   const rememberCard = useReviewStore((state) => state.rememberCard);
   const retryCard = useReviewStore((state) => state.retryCard);
 
-  const cards = buildReviewDeck(noteSections, progressById);
+  const cards = buildReviewDeck(hashReviewSections, progressById);
   const dueCards = cards.filter((card) => card.status === 'due').sort(prioritizeStructuredCards);
   const rememberedCards = cards.filter(
     (card) => card.status === 'upcoming' && card.lastReviewedAt !== null
@@ -44,10 +47,10 @@ export function App() {
       <main className="mx-auto flex min-h-[100svh] w-full max-w-md items-center justify-center px-4 py-6">
         <div className="w-full rounded-[24px] border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-            No notes found yet.
+            No drills found yet.
           </h1>
           <p className="mt-4 text-[15px] leading-7 text-slate-600 dark:text-slate-400">
-            Add a dated <span className="font-semibold text-slate-900 dark:text-slate-100">##</span> or <span className="font-semibold text-slate-900 dark:text-slate-100">###</span> heading in <span className="font-semibold text-slate-900 dark:text-slate-100">apps/english-memory-card/src/app/data/*.md</span>, then refresh the page.
+            Add a dated <span className="font-semibold text-slate-900 dark:text-slate-100">##</span> or <span className="font-semibold text-slate-900 dark:text-slate-100">###</span> heading in <span className="font-semibold text-slate-900 dark:text-slate-100">apps/english-memory-card/src/app/data/*.md</span> with at least one bullet or Key / Value line, then refresh the page.
           </p>
         </div>
       </main>
@@ -133,7 +136,7 @@ function HashTrainingHeader({
             Look at the Key. Say the chunk in 0.5s.
           </h1>
           <p className="mt-3 max-w-3xl text-[15px] leading-7 text-slate-600 sm:mt-4 sm:text-[16px] sm:leading-8 dark:text-slate-300">
-            Train semantic-cluster retrieval by reinforcing each Key with physical cues, visual cues, and imagined listener feedback.
+            Each due card is one retrievable chunk on the forgetting curve. Hit it from the Key first, then reveal the Value and rewire if it stalls.
           </p>
         </div>
 

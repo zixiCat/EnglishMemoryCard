@@ -49,7 +49,7 @@ export function MemoryCardFeed({
                   {getDisplayTitle(card)}
                 </h2>
                 <p className="mt-2 text-[14px] leading-6 text-slate-500 sm:text-[15px] sm:leading-7 dark:text-slate-400">
-                  Key-first drill · {card.statusLabel}
+                  One chunk on the forgetting curve · {card.statusLabel}
                 </p>
               </div>
 
@@ -65,7 +65,7 @@ export function MemoryCardFeed({
 
             <div className="min-h-0 flex-1 overflow-visible rounded-[24px] bg-slate-50/80 p-3 sm:overflow-hidden sm:rounded-[28px] sm:p-5 dark:bg-slate-800/60">
               <div className="memory-scroll sm:h-full sm:overflow-y-auto sm:pr-1">
-                <MemoryCardContent body={card.body} />
+                <MemoryCardContent body={card.body} showTrainingRules={false} />
               </div>
             </div>
 
@@ -182,7 +182,7 @@ export function RememberedCardDrawer({
                     </div>
 
                     <div className="mt-4 rounded-[22px] bg-slate-50/90 p-3 dark:bg-slate-800/70">
-                      <MemoryCardContent body={card.body} />
+                      <MemoryCardContent body={card.body} showTrainingRules={false} />
                     </div>
 
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-[14px] text-slate-500 dark:text-slate-400">
@@ -204,5 +204,5 @@ export function RememberedCardDrawer({
 }
 
 function getDisplayTitle(card: ReviewCard): string {
-  return card.title === '2026' ? 'Daily hash deck' : card.title;
+  return card.title || 'Hash drill';
 }

@@ -2,6 +2,7 @@ import { buildHashDrills, type HashDrill } from '../lib/hash-drills';
 
 interface MemoryCardContentProps {
   readonly body: string;
+  readonly showTrainingRules?: boolean;
 }
 
 interface ProtocolStepProps {
@@ -25,35 +26,37 @@ const DEFAULT_REINFORCERS = [
   'Feedback: imagine the listener reaction',
 ] as const;
 
-export function MemoryCardContent({ body }: MemoryCardContentProps) {
+export function MemoryCardContent({ body, showTrainingRules = false }: MemoryCardContentProps) {
   const drills = buildHashDrills(body);
   const structuredCount = drills.filter((drill) => drill.source === 'structured').length;
 
   return (
     <div className="space-y-4 text-[15px] leading-7 text-slate-800 sm:space-y-5 dark:text-slate-200">
-      <details className="overflow-hidden rounded-[22px] border border-amber-200/80 bg-amber-50/80 dark:border-amber-300/20 dark:bg-amber-300/10">
-        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-[14px] font-semibold text-amber-900 sm:px-5 dark:text-amber-100 [&::-webkit-details-marker]:hidden">
-          <span>Training rules</span>
-          <span className="rounded-full bg-white/80 px-3 py-1 text-[13px] text-amber-800 shadow-sm dark:bg-slate-950/20 dark:text-amber-100">
-            Speak first
-          </span>
-        </summary>
-        <div className="border-t border-amber-200/70 p-4 sm:p-5 dark:border-amber-300/20">
-          <h3 className="text-[20px] font-semibold leading-tight text-slate-950 sm:text-[22px] dark:text-white">
-            Look at the Key, speak within 0.5s, then reveal the Value.
-          </h3>
-          <div className="mt-4 grid gap-3 sm:mt-5 sm:grid-cols-3 sm:gap-5">
-            <ProtocolStep label="01" text="Make the Key simple enough to spark a feeling instantly." />
-            <ProtocolStep label="02" text="Hide the Value so you are retrieving, not reading." />
-            <ProtocolStep label="03" text="Reinforce it with movement, imagery, and listener feedback." />
+      {showTrainingRules ? (
+        <details className="overflow-hidden rounded-[22px] border border-amber-200/80 bg-amber-50/80 dark:border-amber-300/20 dark:bg-amber-300/10">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-[14px] font-semibold text-amber-900 sm:px-5 dark:text-amber-100 [&::-webkit-details-marker]:hidden">
+            <span>Training rules</span>
+            <span className="rounded-full bg-white/80 px-3 py-1 text-[13px] text-amber-800 shadow-sm dark:bg-slate-950/20 dark:text-amber-100">
+              Speak first
+            </span>
+          </summary>
+          <div className="border-t border-amber-200/70 p-4 sm:p-5 dark:border-amber-300/20">
+            <h3 className="text-[20px] font-semibold leading-tight text-slate-950 sm:text-[22px] dark:text-white">
+              Look at the Key, speak within 0.5s, then reveal the Value.
+            </h3>
+            <div className="mt-4 grid gap-3 sm:mt-5 sm:grid-cols-3 sm:gap-5">
+              <ProtocolStep label="01" text="Make the Key simple enough to spark a feeling instantly." />
+              <ProtocolStep label="02" text="Hide the Value so you are retrieving, not reading." />
+              <ProtocolStep label="03" text="Reinforce it with movement, imagery, and listener feedback." />
+            </div>
           </div>
-        </div>
-        {structuredCount === 0 ? (
-          <p className="mx-4 mb-4 rounded-[18px] bg-white/70 px-4 py-3 text-[14px] text-amber-900 sm:mx-5 sm:mb-5 sm:px-5 dark:bg-slate-950/20 dark:text-amber-100">
-            Starter mode is active: the app uses the first three English words as a temporary Key. For stronger retrieval, record notes with Key / Value / Trigger fields.
-          </p>
-        ) : null}
-      </details>
+          {structuredCount === 0 ? (
+            <p className="mx-4 mb-4 rounded-[18px] bg-white/70 px-4 py-3 text-[14px] text-amber-900 sm:mx-5 sm:mb-5 sm:px-5 dark:bg-slate-950/20 dark:text-amber-100">
+              Starter mode is active: the app uses the first three English words as a temporary Key. For stronger retrieval, record notes with Key / Value / Trigger fields.
+            </p>
+          ) : null}
+        </details>
+      ) : null}
 
       <div className="space-y-5">
         {drills.map((drill, index) => (
