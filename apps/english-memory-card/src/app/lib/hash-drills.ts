@@ -95,6 +95,12 @@ function parseHashLine(line: string): ParsedHashLine | null {
     return structuredLine;
   }
 
+  const simpleStructuredLine = parseSimpleHashLine(normalizedLine);
+
+  if (simpleStructuredLine) {
+    return simpleStructuredLine;
+  }
+
   return parseStarterHashLine(normalizedLine);
 }
 
@@ -125,8 +131,10 @@ function countReviewWords(drill: HashDrill): number {
 }
 
 function stringifyHashDrill(drill: HashDrill): string {
+  const displayKey = stripHashKeyBrackets(drill.key);
+
   return drill.values
-    .map((value) => `- Key: ${drill.key} | Value: ${value}`)
+    .map((value) => `- ${displayKey} - ${value}`)
     .join("\n");
 }
 
@@ -144,6 +152,23 @@ function parseStructuredHashLine(line: string): ParsedHashLine | null {
     note: readField(fields, FIELD_ALIASES.note),
     source: "structured",
     value: normalizeInlineWhitespace(value),
+  };
+}
+
+function parseSimpleHashLine(line: string): ParsedHashLine | null {
+  const simpleHashMatch = line.match(/^(.+?)\s+[-–—]\s+(.+)$/);
+  const rawKey = normalizeInlineWhitespace(simpleHashMatch?.[1] ?? "");
+  const value = normalizeInlineWhitespace(simpleHashMatch?.[2] ?? "");
+
+  if (!looksLikeSimpleHashKey(rawKey) || !value) {
+    return null;
+  }
+
+  return {
+    key: rawKey,
+    note: null,
+    source: "structured",
+    value,
   };
 }
 
@@ -234,6 +259,23 @@ function normalizeKeyIdentity(value: string): string {
 
 function normalizeFieldName(value: string): string {
   return normalizeInlineWhitespace(value).toLowerCase();
+}
+
+function stripHashKeyBrackets(value: string): string {
+  return normalizeInlineWhitespace(value).replace(/^\[(.+)\]$/, "$1");
+}
+
+function looksLikeSimpleHashKey(value: string): boolean {
+  const normalizedValue = normalizeInlineWhitespace(value);
+  const tokenCount = normalizedValue.split(/\s+/).filter(Boolean).length;
+
+  return Boolean(
+    normalizedValue
+    && normalizedValue.length <= 48
+    && tokenCount <= 4
+    && !/[|:：]/.test(normalizedValue)
+    && !/[.?!。！？]/.test(normalizedValue),
+  );
 }
 
 function uniqueValues(values: readonly string[]): string[] {

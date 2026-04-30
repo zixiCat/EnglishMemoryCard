@@ -59,51 +59,54 @@ The app reads markdown directly from:
 apps/english-memory-card/src/app/data/
 ```
 
-Each dated section becomes the source for one or more review cards.
-
-Example:
+The recommended format is now the simple one-line form you asked for: one dated section, then one `Key - Value` bullet per card entry.
 
 ```md
-## 2026-04-30 Meeting Notes
+### 2026-04-21
 
-- I am not following your logic.
-- Can you slow that down?
-
-#### Hash Keys
-
-- Key: [LOGIC_GAP] | Value: I am not following your logic.
-- Key: [SLOW_DOWN] | Value: Can you slow that down?
+- Key1 - xxxxxx.
+- Key2 - xxxxxx (xxx)
+- Key1 - xxxx
+- Key3 - xxxx
+- Key2 - xxxxx (xxxx)
 ```
+
+This is enough. You do not need to keep both:
+
+- a plain sentence list
+- and a separate `#### Hash Keys` block
 
 Important rules:
 
 - A dated heading starts a section.
-- Plain lines can become fallback drills automatically.
-- Structured `Key` / `Value` lines are preferred when they exist.
-- Repeating the same `Key:` inside one dated section merges those lines into one drill with multiple Values.
-
-That last point matters: if a section contains any structured hash-drill lines, the app uses those structured drills instead of auto-generated fallback keys from the plain lines in that section.
+- Each `- Key - Value` line becomes structured review content.
+- Repeating the same Key inside one dated section merges those lines into one drill with multiple Values.
+- Parentheses in the Value are kept as part of the sentence.
 
 ## Supported Card Syntax
 
-There are two practical ways to write content.
+There are now two useful formats, but the simple one should be your default.
 
-### 1. Plain Notes
-
-You can write ordinary bullet points or numbered lines:
+### 1. Recommended: Simple `Key - Value`
 
 ```md
 ### 2026-04-30
 
-- Somebody's talking to me, but I'm really not comprehending.
-- Am I supposed to go up?
+- comprehension_gap - Somebody's talking to me, but I'm really not comprehending.
+- comprehension_gap - I'm not following your logic.
+- next_step - Am I supposed to go up?
 ```
 
-If a dated section has no structured `Key:` lines, the app creates starter keys automatically from the first few English words.
+Practical authoring rules:
 
-### 2. Structured Hash Drills
+- Keep the Key short and easy to trigger.
+- Keep each Key at `1-3` Values when possible.
+- If one Key grows beyond `3` Values, split it into sharper clusters.
+- Use repeated Keys only when the grouped Values really belong to the same retrieval cue.
 
-For stable retrieval practice, use explicit `Key:` and `Value:` lines:
+### 2. Backward Compatible: Explicit `Key:` / `Value:`
+
+Old notes can still use the more explicit pipe syntax:
 
 ```md
 ### 2026-04-30
@@ -114,20 +117,13 @@ For stable retrieval practice, use explicit `Key:` and `Value:` lines:
 - Key: [NEXT] | Note: route decision | Value: Which way do I go from here?
 ```
 
-Fields that currently affect card generation:
+Fields that currently affect card generation in the explicit syntax:
 
 - `Key`
 - `Value`
 - `Note`
 
-Extra pipe-separated metadata can stay in your notes, but the current hash-drill parser only uses the fields above to build the actual review cards.
-
-Practical authoring rules:
-
-- Keep Keys short and easy to trigger.
-- Keep each Key at `1-3` Values when possible.
-- If one Key grows beyond `3` Values, split it into sharper clusters.
-- Use repeated Keys only when the grouped Values really belong to the same retrieval cue.
+If a dated section contains no structured lines at all, the app can still fall back to plain note lines and auto-generate starter keys from the first few English words.
 
 ## Interface Behavior
 
