@@ -1,5 +1,3 @@
-- getting_stuck - Cuz I am going to get stuck in them
-- tentative_maybe - Probably get it.
 - playful_tease - You'd like that, wouldn't you?
 - cruel_unfair - Oh, god, cruelty
 - no_undo - You can't turn it back
