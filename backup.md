@@ -1,6 +1,3 @@
-- playful_tease - You'd like that, wouldn't you?
-- cruel_unfair - Oh, god, cruelty
-- no_undo - You can't turn it back
 - safe_strat - This is a strat when you are bad at the game (strategy, tip, tactic)
 - danger_rising - Oh, it's getting a little dicey, it's getting a little hairy in here (The informal expression "it's getting a little hairy" means a situation is becoming dangerous, difficult, or frightening.)
 - mild_frustration - Are you frustrated
