@@ -1,6 +1,3 @@
-- disbelief_kidding - You got to be kidding me / You gotta be kidding me
-- spot_found - there it is
-- repeat_failure - The definition of insanity is doing the same thing (/defɪ'nɪʃn/ /ɪn'sænəti/)
 - getting_stuck - Cuz I am going to get stuck in them
 - tentative_maybe - Probably get it.
 - playful_tease - You'd like that, wouldn't you?
