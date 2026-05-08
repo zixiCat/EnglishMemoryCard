@@ -4,7 +4,7 @@
   "license"        : "MIT",
   "scripts"        : {
     "build:pages": "node ./scripts/build-github-static.mjs",
-    "deploy"     : "node ./scripts/build-github-static.mjs --publish-docs; node ./scripts/deploy-docs.mjs",
+    "deploy"     : "node ./scripts/deploy-docs.mjs",
     "start"      : "nx serve english-memory-card",
     "build"      : "nx build english-memory-card",
     "test"       : "nx test english-memory-card",
