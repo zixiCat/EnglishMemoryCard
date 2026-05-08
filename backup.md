@@ -1,9 +1,3 @@
-- loot_everything - Can loot everything because Resident Evil likes to make me go crazy
-- age_out_joke - Fortnite's going to be for old people, so count your days
-- nose_scoff - Anybody who just scoffed, if you blow a significant amount of air out of your nose when I said bingo, that sounds fun.
-- go_inside - Okay, I am into Oh, well, we'll go in here
-- annoying_future - That's going to be annoying
-- spot_loot - A box? A ruby
 - strict_identity - I think that's kind of funny, too, cuz I pretty sure they're like rather strict about how Miku appears, like what Miku is. Miku is a pop idol, you know.
 - confusing_map - This brown map is confusing, everything looks the same
 - use_surplus - We have so much of this now, I got to use this
