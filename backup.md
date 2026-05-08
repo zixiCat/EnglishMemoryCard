@@ -1,9 +1,3 @@
-
-- mild_frustration - Are you frustrated
-- spooky_aftermath - Well, that was spooky
-
-### 2026-04-22
-
 - loot_everything - Can loot everything because Resident Evil likes to make me go crazy
 - age_out_joke - Fortnite's going to be for old people, so count your days
 - nose_scoff - Anybody who just scoffed, if you blow a significant amount of air out of your nose when I said bingo, that sounds fun.
