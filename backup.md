@@ -1,7 +1,3 @@
-- strict_identity - I think that's kind of funny, too, cuz I pretty sure they're like rather strict about how Miku appears, like what Miku is. Miku is a pop idol, you know.
-- confusing_map - This brown map is confusing, everything looks the same
-- use_surplus - We have so much of this now, I got to use this
-- outnumbered_swarm - What if you're like significantly outnumbered by chickens (/sɪɡ'nɪfɪkəntli/)
 - panic_freak - Again? I am going to freak
 - food_coconut_chicken - coconut chicken (/'koʊkənʌt/ 椰子鸡)
 - object_windmill - Wait, windmill (/'wɪndmɪl/ 风车)
@@ -135,3 +131,29 @@
 - key_value_only - Every raw line should become one keyed chunk: one specific Key and one retrievable Value.
 - collision_limit - Keep each Key at 1-3 Values, and split it if hesitation starts.
 - miss_rewire - If the Value doesn't show up in 0.5 seconds, the Key is too broad or the chunk is not sealed yet.
+
+I like LLama-Factory as it integrates some of the libraries you mentioned and makes it relatively easy to use.
+
+I agree Llama Factory is the way to go for standard stuff like SFT but for more complicated things where you need more flexibility, Unsloth is much better.
+
+DeepSpeed is a deep learning optimization library that makes distributed training and inference easy, efficient, and effective.
+
+Which one would you recommend to someone who is looking to dive deep
+
+
+Unsloth actually does no quantization and no accuracy degradation! /'ækjərəsi/
+
+that makes sense, but isnt it worth fine tuning using HF to learn about the nuts and bolts and then go to unsloth? Im trying to learn the finer details
+
+
+
+Finer details as in what? 
+
+Roughly speaking, finetuning only has the following components: dataset, effective batch size and learning rate (+ lora settings if peft).
+
+What people don't seem to often understand is that beyond quantized models, Unsloth also does various optimized kernels and algorithms that reduce VRAM consumption and increase speed in consumer/prosumer hardware context in finetuning and inference.
+
+It means that you can finetune bigger models with larger context and faster using Unsloth compared to HF TF, which is less optimized.
+
+
+
