@@ -104,6 +104,23 @@ Practical authoring rules:
 - If one Key grows beyond `3` Values, split it into sharper clusters.
 - Use repeated Keys only when the grouped Values really belong to the same retrieval cue.
 
+### How To Choose A Key
+
+Treat each Key like a fast speaking trigger, not a note label.
+
+- Start with the cue you naturally use to think of the sentence in real life.
+- Prefer the shortest cue that still brings back the line within about one second.
+- Good cues usually come from a scene, an action, an emotion, an interaction, or a speaking function.
+- If a phrase already comes out naturally in a certain situation, let the Key mirror that situation instead of explaining the sentence.
+- One Key should point to one retrieval action. If you need to explain the Key to yourself, it is usually too broad or too descriptive.
+- Reuse a Key only when the grouped Values truly belong to the same speaking move.
+- Replace placeholder names such as `xxx`, `something`, or long explanation-style labels with a shorter cue you would actually recognize under pressure.
+
+Useful test:
+
+- If you see the Key and can immediately picture when you would say it, the Key is probably good.
+- If you see the Key and have to decode what it means first, rewrite it.
+
 ### 2. Backward Compatible: Explicit `Key:` / `Value:`
 
 Old notes can still use the more explicit pipe syntax:
