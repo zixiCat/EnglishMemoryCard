@@ -1,26 +1,3 @@
-- panic_freak - Again? I am going to freak
-- food_coconut_chicken - coconut chicken (/'koʊkənʌt/ 椰子鸡)
-- object_windmill - Wait, windmill (/'wɪndmɪl/ 风车)
-- sound_bell_bong - cuz the bell went bong (/bɑːŋ/)
-- route_this_way - okay, we go this way
-- tactile_tickle - cuz they tickle when you put them on
-- food_beef_brisket - beef brisket (牛腩)
-- opposite_direction - Goes the opposite way
-
-### 2026-04-23
-
-- model_constraints - Teams often need specific models for compliance, performance, or cost reasons
-- vscode_agent_app - The Visual Studio Code Agents app is a companion app that ships alongside VS Code Insiders
-- ai_verify_code - You could add some skills to let AI verify the code every time it makes a change, to make sure you utilize this premium request efficiently ( 'juːtəlaɪz/)
-- assistant_concise - You are a helpful, accurate, and concise AI assistant (/kən'saɪs/)
-- answer_directly - Answer the user's questions clearly and directly
-- model_switch_opus - Looks like it's time to change the model again, I really want to take a sip of pure Opus.
-- overdue_status - Overdue 8h (已超时8小时)
-
-### 2026-04-24
-
-- json_format_example - This is an example of how the json file must be
-
 ### 2026-04-25
 
 - next_step_up - Am I supposed to go up
