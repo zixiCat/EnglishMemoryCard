@@ -1,22 +1,5 @@
 ### 2026-04-26
 
-- match_hair - I wish I could match the hair specifically
-- where_would_it_be - Where would it be? This is so useful
-- dont_see_it - I don't see it
-- evil_read - He's evil, I think he is kind of eval, I'm pretty sure
-- chill_check - Okay, yean, let's go, is he chill? (他好相处吗？随和、不紧张、容易相处)
-- safe_convention - This is the safe convention (这是稳妥的做法)
-- release_bump - Try `npm run release -- 1.0.0` to bump everything and inspect the diff. (碰撞/提升/增加/顶贴/升级版本号)
-- release_publish - When you are ready to ship, run `npm run release -- publish` to publish (船/发布/发货/上线/交付)
-- what_supposed_to_be - What is this supposed to be
-- indecisive_adjust - Hold on, I think I'm going to adjust some stuff. I don't know, I'm indecisive, you know (/ˌɪndɪ'saɪsɪv/ 我犹豫不决)
-- dead_option - No, no, no. that's dead. No, maybe like this.
-- circles_shape - Is this kind of like circles?
-- cant_tell_anymore - I can't tell anymore (我已经看不出来了)
-- nonsense_callout - You're not making any sense
-- too_lewd - It's way too lewd (/'luːd/ 这太猥亵了)
-- timing_warning - You gotta think about your timing (你得考虑一下时机)
-- stimulating_expectation - I bet the real thing is gonna be really stimulating (/'stɪmjuleɪtɪŋ/ 刺激的)
 - alone_different - I'm all alone, but it's different somehow (我一个人，但感觉有一种说不清楚的不一样)
 - alone_no_leads - From when I'm alone looking for her with no leads, I'm nervous for some reason (当我一个人没有线索地寻找她时，我莫名其妙地感到紧张)
 - blame_you - You made me do it (你让我这么做的)
