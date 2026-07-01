@@ -29,10 +29,12 @@ export function App() {
   const cards = buildReviewDeck(hashReviewSections, progressById);
   const dueCards = cards
     .filter((card) => card.status === "due")
-    .sort(prioritizeStructuredCards);
-  const rememberedCards = cards.filter(
-    (card) => card.status === "upcoming" && card.lastReviewedAt !== null,
-  );
+    .sort(compareDueCardsNewestFirst);
+  const rememberedCards = cards
+    .filter((card) => card.status === "upcoming" && card.lastReviewedAt !== null)
+    .sort((left, right) =>
+      (right.lastReviewedAt ?? "").localeCompare(left.lastReviewedAt ?? ""),
+    );
 
   if (!hydrated) {
     return (
@@ -214,4 +216,22 @@ function prioritizeStructuredCards(
 
 function hasStructuredHashSyntax(card: ReviewCard): boolean {
   return /(?:^|\n)\s*[-*]?\s*Key\s*[:：].*\|\s*Value\s*[:：]/i.test(card.body);
+}
+
+function compareDueCardsNewestFirst(
+  left: ReviewCard,
+  right: ReviewCard,
+): number {
+  return (
+    prioritizeStructuredCards(left, right)
+    || right.date.localeCompare(left.date)
+    || getReviewCardSequence(right) - getReviewCardSequence(left)
+    || right.id.localeCompare(left.id)
+  );
+}
+
+function getReviewCardSequence(card: ReviewCard): number {
+  const trailingNumber = card.id.match(/-(\d+)$/)?.[1];
+
+  return trailingNumber ? Number(trailingNumber) : 0;
 }
