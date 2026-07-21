@@ -239,7 +239,7 @@ function HashTrainingHeader({
           </h1>
         </div>
 
-        <div className="flex flex-col gap-3 sm:min-w-[360px] sm:items-end">
+        <div className="flex flex-col gap-3 sm:min-w-[300px] sm:items-end">
           <div className="grid grid-cols-3 gap-2 sm:w-full">
             <HeaderMetric
               icon={<Gauge className="h-4 w-4" />}
@@ -290,7 +290,7 @@ interface HeaderMetricProps {
 
 function HeaderMetric({ icon, label, text }: HeaderMetricProps) {
   return (
-    <div className="rounded-[18px] bg-slate-50 p-3 dark:bg-slate-800/70">
+    <div className="rounded-[16px] bg-slate-50 p-3 dark:bg-slate-800/70">
       <div className="flex items-center gap-2 text-[13px] font-semibold text-slate-500 dark:text-slate-400 sm:text-[14px]">
         {icon}
         <span>{label}</span>

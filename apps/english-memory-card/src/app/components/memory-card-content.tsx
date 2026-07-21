@@ -24,8 +24,8 @@ function HashDrillCard({ drill }: HashDrillCardProps) {
   const hasCollisionRisk = drill.values.length > 3;
 
   return (
-    <div className="grid gap-3 lg:grid-cols-[minmax(12rem,0.65fr)_minmax(0,1.35fr)]">
-      <div className="min-w-0 rounded-[18px] border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/70">
+    <div className="flex gap-3 flex-col">
+      <div className="min-w-0 rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-2 dark:border-slate-700 dark:bg-slate-800/70">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h3 className="break-words text-[18px] font-semibold leading-7 text-slate-950 dark:text-white">
             {drill.key}
@@ -43,10 +43,10 @@ function HashDrillCard({ drill }: HashDrillCardProps) {
         ) : null}
       </div>
 
-      <details className="group min-w-0 overflow-hidden rounded-[18px] border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950/20">
-        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-[15px] font-semibold text-slate-800 focus-visible:outline-none group-open:border-b group-open:border-slate-200 dark:text-slate-100 dark:group-open:border-slate-700 [&::-webkit-details-marker]:hidden">
+      <details className="group min-w-0 overflow-hidden rounded-[16px] border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950/20">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-2 text-[14px] font-semibold text-slate-800 focus-visible:outline-none group-open:border-b group-open:border-slate-200 dark:text-slate-100 dark:group-open:border-slate-700 [&::-webkit-details-marker]:hidden">
           <span>Value</span>
-          <span className="shrink-0 rounded-full bg-slate-900 px-3 py-1 text-[14px] text-white dark:bg-white dark:text-slate-900">
+          <span className="rounded-[16px] bg-slate-900 w-[60px] flex justify-center items-center text-white dark:bg-white dark:text-slate-900">
             Reveal
           </span>
         </summary>
