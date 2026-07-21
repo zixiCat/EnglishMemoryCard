@@ -11,6 +11,13 @@ const longDateFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
   year: 'numeric',
 });
+const scheduleDateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+});
 const longDateTimeFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   day: 'numeric',
@@ -18,7 +25,7 @@ const longDateTimeFormatter = new Intl.DateTimeFormat('en-US', {
   minute: '2-digit',
 });
 
-export const FORGETTING_CURVE_DAYS = [1, 3, 7, 14, 30, 60] as const;
+export const FORGETTING_CURVE_DAYS = [1, 3, 7, 14, 30, 60, 90, 120] as const;
 
 export function buildReviewDeck(
   sections: readonly NoteSection[],
@@ -31,13 +38,15 @@ export function buildReviewDeck(
       const dueAt = savedProgress?.dueAt ?? createInitialDueAt(section.date);
       const dueDate = new Date(dueAt);
       const dueNow = dueDate.getTime() <= now.getTime();
-      const stage = savedProgress?.stage ?? 0;
+      const stage = clampReviewStage(savedProgress?.stage ?? 0);
+      const nextReviewPreviewAt = getNextReviewPreviewAt(stage, now);
 
       return {
         ...section,
         stage,
         dueAt,
         dueLabel: formatRelativeDueLabel(dueAt, now),
+        nextReviewPreviewAt,
         status: dueNow ? 'due' : 'upcoming',
         statusLabel: dueNow ? 'Ready for review' : `Next review ${longDateFormatter.format(dueDate)}`,
         progressRatio: Math.max((stage + 1) / (FORGETTING_CURVE_DAYS.length + 1), 0.12),
@@ -63,12 +72,12 @@ export function buildRememberedState(
   currentProgress?: StoredReviewState,
   now = new Date()
 ): StoredReviewState {
-  const nextStage = Math.min((currentProgress?.stage ?? 0) + 1, FORGETTING_CURVE_DAYS.length);
-  const intervalDays = FORGETTING_CURVE_DAYS[Math.min(nextStage - 1, FORGETTING_CURVE_DAYS.length - 1)];
+  const nextStage = getNextReviewStage(currentProgress?.stage ?? 0);
+  const dueAt = getNextReviewPreviewAt(currentProgress?.stage ?? 0, now);
 
   return {
     stage: nextStage,
-    dueAt: new Date(now.getTime() + intervalDays * DAY_MS).toISOString(),
+    dueAt,
     lastReviewedAt: now.toISOString(),
   };
 }
@@ -120,6 +129,10 @@ export function formatDueDate(dueAt: string): string {
   return longDateFormatter.format(new Date(dueAt));
 }
 
+export function formatDueDateTime(dueAt: string): string {
+  return scheduleDateTimeFormatter.format(new Date(dueAt));
+}
+
 export function formatLastReviewedAt(lastReviewedAt: string | null): string {
   if (!lastReviewedAt) {
     return 'Not reviewed yet';
@@ -130,6 +143,23 @@ export function formatLastReviewedAt(lastReviewedAt: string | null): string {
 
 function formatIntervalLabel(days: number): string {
   return days === 1 ? '1 day' : `${days} days`;
+}
+
+function clampReviewStage(stage: number): number {
+  return Math.min(Math.max(Math.trunc(stage), 0), FORGETTING_CURVE_DAYS.length);
+}
+
+function getNextReviewStage(currentStage: number): number {
+  return Math.min(clampReviewStage(currentStage) + 1, FORGETTING_CURVE_DAYS.length);
+}
+
+function getNextReviewPreviewAt(currentStage: number, now: Date): string {
+  const nextStage = getNextReviewStage(currentStage);
+  const intervalDays = FORGETTING_CURVE_DAYS[
+    Math.min(nextStage - 1, FORGETTING_CURVE_DAYS.length - 1)
+  ];
+
+  return new Date(now.getTime() + intervalDays * DAY_MS).toISOString();
 }
 
 function formatRelativeDueLabel(dueAt: string, now: Date): string {

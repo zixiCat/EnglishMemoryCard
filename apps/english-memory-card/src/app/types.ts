@@ -19,6 +19,7 @@ export interface ReviewCard extends NoteSection {
   readonly stage: number;
   readonly dueAt: string;
   readonly dueLabel: string;
+  readonly nextReviewPreviewAt: string;
   readonly status: 'due' | 'upcoming';
   readonly statusLabel: string;
   readonly progressRatio: number;

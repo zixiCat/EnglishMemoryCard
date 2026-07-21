@@ -9,6 +9,9 @@ interface ReviewStoreState {
   readonly progressById: Record<string, StoredReviewState>;
   readonly rememberedDrawerOpen: boolean;
   readonly setHydrated: (hydrated: boolean) => void;
+  readonly replaceProgress: (
+    progressById: Record<string, StoredReviewState>
+  ) => void;
   readonly setRememberedDrawerOpen: (open: boolean) => void;
   readonly rememberCard: (id: string) => void;
   readonly retryCard: (id: string) => void;
@@ -21,6 +24,7 @@ export const useReviewStore = create<ReviewStoreState>()(
       progressById: {},
       rememberedDrawerOpen: false,
       setHydrated: (hydrated) => set({ hydrated }),
+      replaceProgress: (progressById) => set({ progressById }),
       setRememberedDrawerOpen: (open) => set({ rememberedDrawerOpen: open }),
       rememberCard: (id) =>
         set((state) => ({

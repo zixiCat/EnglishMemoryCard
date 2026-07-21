@@ -1,6 +1,6 @@
-import { BrainCircuit, Gauge, Layers3 } from "lucide-react";
+import { BrainCircuit, Download, Gauge, Layers3, Upload } from "lucide-react";
 import { motion } from "motion/react";
-import type { ReactNode } from "react";
+import { type ChangeEvent, type ReactNode, useRef } from "react";
 
 import {
   MemoryCardFeed,
@@ -9,14 +9,20 @@ import {
 import { noteSections } from "./data/generated-notes";
 import { buildReviewDeck } from "./lib/forgetting-curve";
 import { buildHashReviewSections } from "./lib/hash-drills";
+import {
+  buildReviewProgressExport,
+  parseImportedReviewProgress,
+} from "./lib/review-progress-transfer";
 import { useReviewStore } from "./store/use-review-store";
 import type { ReviewCard } from "./types";
 
 const hashReviewSections = buildHashReviewSections(noteSections);
+const PROGRESS_EXPORT_FILE_PREFIX = "english-memory-card-progress";
 
 export function App() {
   const hydrated = useReviewStore((state) => state.hydrated);
   const progressById = useReviewStore((state) => state.progressById);
+  const replaceProgress = useReviewStore((state) => state.replaceProgress);
   const rememberedDrawerOpen = useReviewStore(
     (state) => state.rememberedDrawerOpen,
   );
@@ -25,6 +31,7 @@ export function App() {
   );
   const rememberCard = useReviewStore((state) => state.rememberCard);
   const retryCard = useReviewStore((state) => state.retryCard);
+  const importInputRef = useRef<HTMLInputElement | null>(null);
 
   const cards = buildReviewDeck(hashReviewSections, progressById);
   const dueCards = cards
@@ -35,6 +42,62 @@ export function App() {
     .sort((left, right) =>
       (right.lastReviewedAt ?? "").localeCompare(left.lastReviewedAt ?? ""),
     );
+
+  const handleExportProgress = () => {
+    const progressExport = buildReviewProgressExport(progressById);
+    const blob = new Blob([JSON.stringify(progressExport, null, 2)], {
+      type: "application/json",
+    });
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = objectUrl;
+    link.download = `${PROGRESS_EXPORT_FILE_PREFIX}-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+  };
+
+  const handleOpenImport = () => {
+    if (!importInputRef.current) {
+      return;
+    }
+
+    importInputRef.current.value = "";
+    importInputRef.current.click();
+  };
+
+  const handleImportProgress = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const importedProgress = parseImportedReviewProgress(await file.text());
+      const importedCount = Object.keys(importedProgress).length;
+      const shouldReplace = window.confirm(
+        `Import ${importedCount} progress entries and replace the current browser progress?`
+      );
+
+      if (!shouldReplace) {
+        return;
+      }
+
+      replaceProgress(importedProgress);
+      window.alert(`Imported ${importedCount} progress entries.`);
+    } catch (error) {
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "Unable to import review progress."
+      );
+    }
+  };
 
   if (!hydrated) {
     return (
@@ -85,8 +148,18 @@ export function App() {
       <main className="mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col px-3 py-3 sm:px-5 sm:py-5">
         <HashTrainingHeader
           dueCount={dueCards.length}
+          onExportProgress={handleExportProgress}
+          onImportProgress={handleOpenImport}
           rememberedCount={rememberedCards.length}
           totalCount={cards.length}
+        />
+
+        <input
+          accept="application/json"
+          className="hidden"
+          onChange={handleImportProgress}
+          ref={importInputRef}
+          type="file"
         />
 
         {dueCards.length > 0 ? (
@@ -136,12 +209,16 @@ export default App;
 
 interface HashTrainingHeaderProps {
   readonly dueCount: number;
+  readonly onExportProgress: () => void;
+  readonly onImportProgress: () => void;
   readonly rememberedCount: number;
   readonly totalCount: number;
 }
 
 function HashTrainingHeader({
   dueCount,
+  onExportProgress,
+  onImportProgress,
   rememberedCount,
   totalCount,
 }: HashTrainingHeaderProps) {
@@ -162,22 +239,43 @@ function HashTrainingHeader({
           </h1>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 sm:min-w-[360px]">
-          <HeaderMetric
-            icon={<Gauge className="h-4 w-4" />}
-            label="Due"
-            text={`${dueCount}`}
-          />
-          <HeaderMetric
-            icon={<BrainCircuit className="h-4 w-4" />}
-            label="Saved"
-            text={`${rememberedCount}`}
-          />
-          <HeaderMetric
-            icon={<Layers3 className="h-4 w-4" />}
-            label="Total"
-            text={`${totalCount}`}
-          />
+        <div className="flex flex-col gap-3 sm:min-w-[360px] sm:items-end">
+          <div className="grid grid-cols-3 gap-2 sm:w-full">
+            <HeaderMetric
+              icon={<Gauge className="h-4 w-4" />}
+              label="Due"
+              text={`${dueCount}`}
+            />
+            <HeaderMetric
+              icon={<BrainCircuit className="h-4 w-4" />}
+              label="Saved"
+              text={`${rememberedCount}`}
+            />
+            <HeaderMetric
+              icon={<Layers3 className="h-4 w-4" />}
+              label="Total"
+              text={`${totalCount}`}
+            />
+          </div>
+
+          <div className="flex flex-wrap justify-end gap-2">
+            <button
+              className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-white/88 px-4 py-2 text-[14px] font-semibold text-slate-700 transition hover:border-slate-300 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:border-slate-600"
+              onClick={onImportProgress}
+              type="button"
+            >
+              <Upload className="h-4 w-4" />
+              <span>Import progress</span>
+            </button>
+            <button
+              className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-900 bg-slate-900 px-4 py-2 text-[14px] font-semibold text-white transition hover:bg-slate-800 dark:border-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+              onClick={onExportProgress}
+              type="button"
+            >
+              <Download className="h-4 w-4" />
+              <span>Export progress</span>
+            </button>
+          </div>
         </div>
       </div>
     </motion.section>
