@@ -1,6 +1,6 @@
-import { BrainCircuit, Download, Gauge, Layers3, Upload } from "lucide-react";
+import { BrainCircuit, Clipboard, Copy, Gauge, Layers3 } from "lucide-react";
 import { motion } from "motion/react";
-import { type ChangeEvent, type ReactNode, useRef } from "react";
+import { type FormEvent, type ReactNode } from "react";
 
 import {
   MemoryCardFeed,
@@ -10,14 +10,13 @@ import { noteSections } from "./data/generated-notes";
 import { buildReviewDeck } from "./lib/forgetting-curve";
 import { buildHashReviewSections } from "./lib/hash-drills";
 import {
-  buildReviewProgressExport,
-  parseImportedReviewProgress,
-} from "./lib/review-progress-transfer";
+  buildReviewProgressCodes,
+  parseReviewProgressCodes,
+} from "./lib/review-progress-codes";
 import { useReviewStore } from "./store/use-review-store";
 import type { ReviewCard } from "./types";
 
 const hashReviewSections = buildHashReviewSections(noteSections);
-const PROGRESS_EXPORT_FILE_PREFIX = "english-memory-card-progress";
 
 export function App() {
   const hydrated = useReviewStore((state) => state.hydrated);
@@ -31,7 +30,6 @@ export function App() {
   );
   const rememberCard = useReviewStore((state) => state.rememberCard);
   const retryCard = useReviewStore((state) => state.retryCard);
-  const importInputRef = useRef<HTMLInputElement | null>(null);
 
   const cards = buildReviewDeck(hashReviewSections, progressById);
   const dueCards = cards
@@ -43,60 +41,19 @@ export function App() {
       (right.lastReviewedAt ?? "").localeCompare(left.lastReviewedAt ?? ""),
     );
 
-  const handleExportProgress = () => {
-    const progressExport = buildReviewProgressExport(progressById);
-    const blob = new Blob([JSON.stringify(progressExport, null, 2)], {
-      type: "application/json",
-    });
-    const objectUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+  const handleCopyProgress = async () => {
+    const codes = buildReviewProgressCodes(cards);
 
-    link.href = objectUrl;
-    link.download = `${PROGRESS_EXPORT_FILE_PREFIX}-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.append(link);
-    link.click();
-    link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+    await navigator.clipboard.writeText(codes);
   };
 
-  const handleOpenImport = () => {
-    if (!importInputRef.current) {
-      return;
-    }
+  const handlePasteProgress = (codes: string) => {
+    const pastedProgress = parseReviewProgressCodes(
+      codes,
+      new Set(cards.map((card) => card.id)),
+    );
 
-    importInputRef.current.value = "";
-    importInputRef.current.click();
-  };
-
-  const handleImportProgress = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    event.target.value = "";
-
-    if (!file) {
-      return;
-    }
-
-    try {
-      const importedProgress = parseImportedReviewProgress(await file.text());
-      const importedCount = Object.keys(importedProgress).length;
-      const shouldReplace = window.confirm(
-        `Import ${importedCount} progress entries and replace the current browser progress?`
-      );
-
-      if (!shouldReplace) {
-        return;
-      }
-
-      replaceProgress(importedProgress);
-      window.alert(`Imported ${importedCount} progress entries.`);
-    } catch (error) {
-      window.alert(
-        error instanceof Error
-          ? error.message
-          : "Unable to import review progress."
-      );
-    }
+    replaceProgress(pastedProgress);
   };
 
   if (!hydrated) {
@@ -148,18 +105,10 @@ export function App() {
       <main className="mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col px-3 py-3 sm:px-5 sm:py-5">
         <HashTrainingHeader
           dueCount={dueCards.length}
-          onExportProgress={handleExportProgress}
-          onImportProgress={handleOpenImport}
+          onCopyProgress={handleCopyProgress}
+          onPasteProgress={handlePasteProgress}
           rememberedCount={rememberedCards.length}
           totalCount={cards.length}
-        />
-
-        <input
-          accept="application/json"
-          className="hidden"
-          onChange={handleImportProgress}
-          ref={importInputRef}
-          type="file"
         />
 
         {dueCards.length > 0 ? (
@@ -209,19 +158,42 @@ export default App;
 
 interface HashTrainingHeaderProps {
   readonly dueCount: number;
-  readonly onExportProgress: () => void;
-  readonly onImportProgress: () => void;
+  readonly onCopyProgress: () => void;
+  readonly onPasteProgress: (codes: string) => void;
   readonly rememberedCount: number;
   readonly totalCount: number;
 }
 
 function HashTrainingHeader({
   dueCount,
-  onExportProgress,
-  onImportProgress,
+  onCopyProgress,
+  onPasteProgress,
   rememberedCount,
   totalCount,
 }: HashTrainingHeaderProps) {
+  const handlePasteSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const field = form.elements.namedItem("progressCodes");
+
+    if (!(field instanceof HTMLTextAreaElement)) {
+      return;
+    }
+
+    field.setCustomValidity("");
+
+    try {
+      onPasteProgress(field.value);
+      field.value = "";
+    } catch (error) {
+      field.setCustomValidity(
+        error instanceof Error ? error.message : "Unable to paste progress.",
+      );
+      field.reportValidity();
+    }
+  };
+
   return (
     <motion.section
       animate={{ opacity: 1, y: 0 }}
@@ -258,24 +230,34 @@ function HashTrainingHeader({
             />
           </div>
 
-          <div className="flex flex-wrap justify-end gap-2">
+          <form
+            className="flex w-full flex-wrap justify-end gap-2"
+            onSubmit={handlePasteSubmit}
+          >
+            <textarea
+              aria-label="Progress codes"
+              className="min-h-11 min-w-0 flex-1 resize-y rounded-[16px] border border-slate-200/80 bg-white/88 px-3 py-2 text-[14px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-slate-400 sm:min-w-[200px] dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-200"
+              name="progressCodes"
+              placeholder="2026-07-05-2-3"
+              required
+              rows={1}
+            />
             <button
               className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-white/88 px-4 py-2 text-[14px] font-semibold text-slate-700 transition hover:border-slate-300 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:border-slate-600"
-              onClick={onImportProgress}
-              type="button"
+              type="submit"
             >
-              <Upload className="h-4 w-4" />
-              <span>Import progress</span>
+              <Clipboard className="h-4 w-4" />
+              <span>Paste progress</span>
             </button>
             <button
               className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-900 bg-slate-900 px-4 py-2 text-[14px] font-semibold text-white transition hover:bg-slate-800 dark:border-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-              onClick={onExportProgress}
+              onClick={onCopyProgress}
               type="button"
             >
-              <Download className="h-4 w-4" />
-              <span>Export progress</span>
+              <Copy className="h-4 w-4" />
+              <span>Copy progress</span>
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </motion.section>

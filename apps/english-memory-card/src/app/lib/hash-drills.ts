@@ -21,49 +21,23 @@ const FIELD_ALIASES = {
 } as const;
 
 export function buildHashDrills(body: string): HashDrill[] {
-  const parsedLines = body
+  return body
     .split(/\n+/)
     .map((line) => parseHashLine(line))
-    .filter((line): line is ParsedHashLine => Boolean(line));
-
-  return parsedLines.reduce<HashDrill[]>((drills, line) => {
-    const existingIndex = drills.findIndex(
-      (drill) =>
-        normalizeKeyIdentity(drill.key) === normalizeKeyIdentity(line.key),
-    );
-
-    if (existingIndex === -1) {
-      return [
-        ...drills,
-        {
-          key: line.key,
-          note: line.note,
-          source: line.source,
-          values: [line.value],
-        },
-      ];
-    }
-
-    const existingDrill = drills[existingIndex];
-    const updatedDrill: HashDrill = {
-      key: existingDrill.key,
-      note: joinUniqueText([existingDrill.note, line.note]),
-      source:
-        existingDrill.source === "structured" || line.source === "structured"
-          ? "structured"
-          : "starter",
-      values: uniqueValues([...existingDrill.values, line.value]),
-    };
-
-    return drills.map((drill, index) =>
-      index === existingIndex ? updatedDrill : drill,
-    );
-  }, []);
+    .filter((line): line is ParsedHashLine => Boolean(line))
+    .map((line) => ({
+      key: line.key,
+      note: line.note,
+      source: line.source,
+      values: [line.value],
+    }));
 }
 
 export function buildHashReviewSections(
   sections: readonly NoteSection[],
 ): NoteSection[] {
+  const cardCountByDate = new Map<string, number>();
+
   return sections.flatMap((section) => {
     const allDrills = buildHashDrills(section.body);
     const structuredDrills = allDrills.filter(
@@ -71,14 +45,20 @@ export function buildHashReviewSections(
     );
     const drills = structuredDrills.length > 0 ? structuredDrills : allDrills;
 
-    return drills.map((drill, index) => ({
-      ...section,
-      id: buildReviewSectionId(section.id, drill.key, index),
-      title: buildReviewTitle(drill),
-      body: stringifyHashDrill(drill),
-      excerpt: buildReviewExcerpt(drill),
-      wordCount: countReviewWords(drill),
-    }));
+    return drills.map((drill, index) => {
+      const cardNumber = (cardCountByDate.get(section.date) ?? 0) + 1;
+
+      cardCountByDate.set(section.date, cardNumber);
+
+      return {
+        ...section,
+        id: `${section.date}-${cardNumber}`,
+        title: buildReviewTitle(drill),
+        body: stringifyHashDrill(drill),
+        excerpt: buildReviewExcerpt(drill),
+        wordCount: countReviewWords(drill),
+      };
+    });
   });
 }
 
@@ -102,18 +82,6 @@ function parseHashLine(line: string): ParsedHashLine | null {
   }
 
   return parseStarterHashLine(normalizedLine);
-}
-
-function buildReviewSectionId(
-  sectionId: string,
-  key: string,
-  index: number,
-): string {
-  const normalizedKey = normalizeKeyIdentity(key)
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  return `${sectionId}-${normalizedKey || "drill"}-${index + 1}`;
 }
 
 function buildReviewTitle(drill: HashDrill): string {
@@ -249,14 +217,6 @@ function normalizeHashKey(value: string): string {
   return `[${normalizedValue}]`;
 }
 
-function normalizeKeyIdentity(value: string): string {
-  return value
-    .replace(/^\[|\]$/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 function normalizeFieldName(value: string): string {
   return normalizeInlineWhitespace(value).toLowerCase();
 }
@@ -276,18 +236,6 @@ function looksLikeSimpleHashKey(value: string): boolean {
     && !/[|:：]/.test(normalizedValue)
     && !/[.?!。！？]/.test(normalizedValue),
   );
-}
-
-function uniqueValues(values: readonly string[]): string[] {
-  return Array.from(new Set(values.filter(Boolean)));
-}
-
-function joinUniqueText(values: readonly (string | null)[]): string | null {
-  const uniqueText = uniqueValues(
-    values.filter((value): value is string => Boolean(value)),
-  );
-
-  return uniqueText.length > 0 ? uniqueText.join(" / ") : null;
 }
 
 function normalizeSentence(line: string): string {
