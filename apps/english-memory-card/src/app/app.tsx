@@ -1,6 +1,6 @@
 import { BrainCircuit, Clipboard, Copy, Gauge, Layers3 } from "lucide-react";
 import { motion } from "motion/react";
-import { type FormEvent, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import {
   MemoryCardFeed,
@@ -42,12 +42,16 @@ export function App() {
     );
 
   const handleCopyProgress = async () => {
-    const codes = buildReviewProgressCodes(cards);
+    const codes = buildReviewProgressCodes(
+      progressById,
+      new Set(cards.map((card) => card.id)),
+    );
 
     await navigator.clipboard.writeText(codes);
   };
 
-  const handlePasteProgress = (codes: string) => {
+  const handlePasteProgress = async () => {
+    const codes = await navigator.clipboard.readText();
     const pastedProgress = parseReviewProgressCodes(
       codes,
       new Set(cards.map((card) => card.id)),
@@ -158,8 +162,8 @@ export default App;
 
 interface HashTrainingHeaderProps {
   readonly dueCount: number;
-  readonly onCopyProgress: () => void;
-  readonly onPasteProgress: (codes: string) => void;
+  readonly onCopyProgress: () => Promise<void>;
+  readonly onPasteProgress: () => Promise<void>;
   readonly rememberedCount: number;
   readonly totalCount: number;
 }
@@ -171,29 +175,6 @@ function HashTrainingHeader({
   rememberedCount,
   totalCount,
 }: HashTrainingHeaderProps) {
-  const handlePasteSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const form = event.currentTarget;
-    const field = form.elements.namedItem("progressCodes");
-
-    if (!(field instanceof HTMLTextAreaElement)) {
-      return;
-    }
-
-    field.setCustomValidity("");
-
-    try {
-      onPasteProgress(field.value);
-      field.value = "";
-    } catch (error) {
-      field.setCustomValidity(
-        error instanceof Error ? error.message : "Unable to paste progress.",
-      );
-      field.reportValidity();
-    }
-  };
-
   return (
     <motion.section
       animate={{ opacity: 1, y: 0 }}
@@ -230,24 +211,14 @@ function HashTrainingHeader({
             />
           </div>
 
-          <form
-            className="flex w-full flex-wrap justify-end gap-2"
-            onSubmit={handlePasteSubmit}
-          >
-            <textarea
-              aria-label="Progress codes"
-              className="min-h-11 min-w-0 flex-1 resize-y rounded-[16px] border border-slate-200/80 bg-white/88 px-3 py-2 text-[14px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-slate-400 sm:min-w-[200px] dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-200"
-              name="progressCodes"
-              placeholder="2026-07-05-2-3"
-              required
-              rows={1}
-            />
+          <div className="flex w-full flex-wrap justify-end gap-2">
             <button
               className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-white/88 px-4 py-2 text-[14px] font-semibold text-slate-700 transition hover:border-slate-300 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:border-slate-600"
-              type="submit"
+              onClick={onPasteProgress}
+              type="button"
             >
               <Clipboard className="h-4 w-4" />
-              <span>Paste progress</span>
+              <span>Paste all progress</span>
             </button>
             <button
               className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-900 bg-slate-900 px-4 py-2 text-[14px] font-semibold text-white transition hover:bg-slate-800 dark:border-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
@@ -255,9 +226,9 @@ function HashTrainingHeader({
               type="button"
             >
               <Copy className="h-4 w-4" />
-              <span>Copy progress</span>
+              <span>Copy all progress</span>
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </motion.section>
