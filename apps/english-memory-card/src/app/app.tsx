@@ -36,15 +36,16 @@ export function App() {
     .filter((card) => card.status === "due")
     .sort(compareDueCardsNewestFirst);
   const rememberedCards = cards
-    .filter((card) => card.status === "upcoming" && card.lastReviewedAt !== null)
+    .filter((card) => card.lastReviewedAt !== null)
     .sort((left, right) =>
       (right.lastReviewedAt ?? "").localeCompare(left.lastReviewedAt ?? ""),
     );
+  const cardIdAliases = buildCardIdAliases(cards);
 
   const handleCopyProgress = async () => {
     const codes = buildReviewProgressCodes(
       progressById,
-      new Set(cards.map((card) => card.id)),
+      cardIdAliases,
     );
 
     await navigator.clipboard.writeText(codes);
@@ -54,7 +55,7 @@ export function App() {
     const codes = await navigator.clipboard.readText();
     const pastedProgress = parseReviewProgressCodes(
       codes,
-      new Set(cards.map((card) => card.id)),
+      cardIdAliases,
     );
 
     replaceProgress(pastedProgress);
@@ -282,7 +283,16 @@ function compareDueCardsNewestFirst(
 }
 
 function getReviewCardSequence(card: ReviewCard): number {
-  const trailingNumber = card.id.match(/-(\d+)$/)?.[1];
+  const trailingNumber = card.legacyId?.match(/-(\d+)$/)?.[1];
 
   return trailingNumber ? Number(trailingNumber) : 0;
+}
+
+function buildCardIdAliases(cards: readonly ReviewCard[]): ReadonlyMap<string, string> {
+  return new Map(
+    cards.flatMap((card) => [
+      [card.id, card.id] as const,
+      ...(card.legacyId ? [[card.legacyId, card.id] as const] : []),
+    ]),
+  );
 }

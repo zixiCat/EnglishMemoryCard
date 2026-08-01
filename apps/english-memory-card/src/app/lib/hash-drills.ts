@@ -37,6 +37,7 @@ export function buildHashReviewSections(
   sections: readonly NoteSection[],
 ): NoteSection[] {
   const cardCountByDate = new Map<string, number>();
+  const cardCountByStableId = new Map<string, number>();
 
   return sections.flatMap((section) => {
     const allDrills = buildHashDrills(section.body);
@@ -47,12 +48,16 @@ export function buildHashReviewSections(
 
     return drills.map((drill, index) => {
       const cardNumber = (cardCountByDate.get(section.date) ?? 0) + 1;
+      const stableIdBase = buildStableCardId(section.date, drill.key);
+      const stableIdCount = (cardCountByStableId.get(stableIdBase) ?? 0) + 1;
 
       cardCountByDate.set(section.date, cardNumber);
+      cardCountByStableId.set(stableIdBase, stableIdCount);
 
       return {
         ...section,
-        id: `${section.date}-${cardNumber}`,
+        id: stableIdCount === 1 ? stableIdBase : `${stableIdBase}-${stableIdCount}`,
+        legacyId: `${section.date}-${cardNumber}`,
         title: buildReviewTitle(drill),
         body: stringifyHashDrill(drill),
         excerpt: buildReviewExcerpt(drill),
@@ -60,6 +65,18 @@ export function buildHashReviewSections(
       };
     });
   });
+}
+
+function buildStableCardId(date: string, key: string): string {
+  const normalizedKey = stripHashKeyBrackets(key).toLowerCase();
+  let hash = 2166136261;
+
+  for (let index = 0; index < normalizedKey.length; index += 1) {
+    hash ^= normalizedKey.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return `${date}-h${(hash >>> 0).toString(36)}`;
 }
 
 function parseHashLine(line: string): ParsedHashLine | null {

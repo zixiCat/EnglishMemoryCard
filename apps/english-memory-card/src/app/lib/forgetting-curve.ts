@@ -34,7 +34,8 @@ export function buildReviewDeck(
 ): ReviewCard[] {
   return sections
     .map((section) => {
-      const savedProgress = progressById[section.id];
+      const savedProgress = progressById[section.id]
+        ?? (section.legacyId ? progressById[section.legacyId] : undefined);
       const dueAt = savedProgress?.dueAt ?? createInitialDueAt(section.date);
       const dueDate = new Date(dueAt);
       const dueNow = dueDate.getTime() <= now.getTime();

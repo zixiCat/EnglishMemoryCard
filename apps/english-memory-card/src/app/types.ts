@@ -1,5 +1,6 @@
 export interface NoteSection {
   readonly id: string;
+  readonly legacyId?: string;
   readonly fileName: string;
   readonly relativePath: string;
   readonly date: string;
