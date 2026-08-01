@@ -26,7 +26,7 @@ module.exports = {
     clean: true,
   },
   devServer: {
-    port: 4200,
+    port: 4001,
     historyApiFallback: {
       index: '/index.html',
       disableDotRule: true,
@@ -40,7 +40,7 @@ module.exports = {
       main: './src/main.tsx',
       index: './src/index.html',
       baseHref,
-      assets: ["./src/favicon.ico","./src/assets"],
+      assets: ["./src/favicon.ico", "./src/assets"],
       styles: ["./src/styles.css"],
       outputHashing: process.env['NODE_ENV'] === 'production' ? 'all' : 'none',
       optimization: process.env['NODE_ENV'] === 'production',
