@@ -36,7 +36,7 @@ export function App() {
     .filter((card) => card.status === "due")
     .sort(compareDueCardsNewestFirst);
   const rememberedCards = cards
-    .filter((card) => card.lastReviewedAt !== null)
+    .filter((card) => card.status === "upcoming" && card.lastReviewedAt !== null)
     .sort((left, right) =>
       (right.lastReviewedAt ?? "").localeCompare(left.lastReviewedAt ?? ""),
     );
