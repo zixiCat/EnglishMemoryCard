@@ -1,7 +1,6 @@
-import { FORGETTING_CURVE_DAYS } from './forgetting-curve';
 import type { StoredReviewState } from '../types';
+import { FORGETTING_CURVE_DAYS } from './forgetting-curve';
 
-const PROGRESS_CODE_PATTERN = /^(\d{4}-\d{2}-\d{2}-\d+)-(\d+)$/;
 const PROGRESS_EXPORT_PREFIX = 'ENGLISH_MEMORY_CARD_PROGRESS_V1:';
 
 interface ReviewProgressExport {
@@ -40,18 +39,17 @@ export function buildReviewProgressCodes(
 export function parseReviewProgressCodes(
   text: string,
   cardIdAliases: ReadonlyMap<string, string>,
-  now = new Date(),
 ): Record<string, StoredReviewState> {
   const trimmedText = text.trim();
 
-  if (trimmedText.startsWith(PROGRESS_EXPORT_PREFIX)) {
-    return parseFullProgressExport(
-      trimmedText.slice(PROGRESS_EXPORT_PREFIX.length),
-      cardIdAliases,
-    );
+  if (!trimmedText.startsWith(PROGRESS_EXPORT_PREFIX)) {
+    throw new Error('Invalid progress data. Copy it again from Memory Card.');
   }
 
-  return parseLegacyProgressCodes(trimmedText, cardIdAliases, now);
+  return parseFullProgressExport(
+    trimmedText.slice(PROGRESS_EXPORT_PREFIX.length),
+    cardIdAliases,
+  );
 }
 
 function parseFullProgressExport(
@@ -73,14 +71,14 @@ function parseFullProgressExport(
   const progressById: Record<string, StoredReviewState> = {};
 
   for (const [cardId, progress] of Object.entries(payload.progressById)) {
+    if (!isStoredReviewState(progress)) {
+      throw new Error(`Invalid progress for card: ${cardId}`);
+    }
+
     const currentCardId = cardIdAliases.get(cardId);
 
     if (!currentCardId) {
       continue;
-    }
-
-    if (!isStoredReviewState(progress)) {
-      throw new Error(`Invalid progress for card: ${cardId}`);
     }
 
     progressById[currentCardId] = progress;
@@ -88,44 +86,6 @@ function parseFullProgressExport(
 
   if (Object.keys(payload.progressById).length > 0 && Object.keys(progressById).length === 0) {
     throw new Error('None of the copied cards exist in this version. Local progress was kept.');
-  }
-
-  return progressById;
-}
-
-function parseLegacyProgressCodes(
-  text: string,
-  cardIdAliases: ReadonlyMap<string, string>,
-  now: Date,
-): Record<string, StoredReviewState> {
-  const codes = text.split(/[\s,]+/).map((code) => code.trim()).filter(Boolean);
-  const progressById: Record<string, StoredReviewState> = {};
-
-  for (const code of codes) {
-    const match = code.match(PROGRESS_CODE_PATTERN);
-    const cardId = match?.[1];
-    const currentCardId = cardId ? cardIdAliases.get(cardId) : undefined;
-    const stage = Number(match?.[2]);
-
-    if (
-      !cardId
-      || !currentCardId
-      || !Number.isInteger(stage)
-      || stage < 1
-      || stage > FORGETTING_CURVE_DAYS.length
-    ) {
-      throw new Error(`Invalid progress code: ${code}`);
-    }
-
-    const intervalDays = FORGETTING_CURVE_DAYS[
-      Math.min(stage - 1, FORGETTING_CURVE_DAYS.length - 1)
-    ];
-
-    progressById[currentCardId] = {
-      stage,
-      dueAt: new Date(now.getTime() + intervalDays * 24 * 60 * 60 * 1000).toISOString(),
-      lastReviewedAt: now.toISOString(),
-    };
   }
 
   return progressById;
